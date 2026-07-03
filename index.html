@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <title>생활 정보 대시보드</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
     <style>
         * {
@@ -530,20 +530,337 @@
             }
         }
 
+        /* =========================
+           iPhone / Mobile Compact Mode
+           ========================= */
         @media (max-width: 540px) {
+            html,
+            body {
+                height: 100%;
+                overflow: hidden;
+            }
+
+            body {
+                align-items: flex-start;
+            }
+
+            .container {
+                height: 100dvh;
+                padding: 8px;
+                align-items: flex-start;
+            }
+
+            .app-card {
+                height: calc(100dvh - 16px);
+                max-height: calc(100dvh - 16px);
+                border-radius: 18px;
+                padding: 10px;
+                overflow: hidden;
+            }
+
             .slide-nav {
-                flex-direction: column;
-                align-items: stretch;
+                gap: 8px;
+                margin-bottom: 8px;
             }
 
             .tab-group {
-                width: 100%;
                 display: grid;
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(5, 1fr);
+                gap: 5px;
+                width: 100%;
+            }
+
+            .slide-tab {
+                padding: 7px 4px;
+                font-size: 11px;
+                border-radius: 10px;
             }
 
             .refresh-btn {
-                width: 100%;
+                padding: 8px 10px;
+                font-size: 12px;
+                border-radius: 10px;
+            }
+
+            .slider {
+                height: calc(100dvh - 82px);
+            }
+
+            .slider-track {
+                height: 100%;
+            }
+
+            .slide {
+                height: 100%;
+                overflow: hidden;
+            }
+
+            .page {
+                height: 100%;
+                overflow: hidden;
+            }
+
+            .header {
+                margin-bottom: 8px;
+            }
+
+            .title {
+                font-size: 20px;
+                letter-spacing: -0.6px;
+            }
+
+            .subtitle {
+                margin-top: 3px;
+                font-size: 11px;
+            }
+
+            .location-box {
+                padding: 8px 10px;
+                border-radius: 12px;
+                margin-bottom: 8px;
+            }
+
+            .location-label {
+                font-size: 10px;
+                margin-bottom: 2px;
+            }
+
+            .location-value {
+                font-size: 13px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .layout-2,
+            .layout-3 {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .box {
+                border-radius: 14px;
+                padding: 10px;
+            }
+
+            .section-label {
+                font-size: 12px;
+                margin-bottom: 6px;
+            }
+
+            .main-weather {
+                grid-template-columns: 70px 1fr;
+                gap: 8px;
+                text-align: left;
+            }
+
+            .weather-icon {
+                font-size: 44px;
+            }
+
+            .temperature {
+                font-size: 38px;
+                letter-spacing: -2px;
+            }
+
+            .weather-text {
+                font-size: 15px;
+                margin-top: 2px;
+            }
+
+            .info-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 6px;
+                margin-top: 8px;
+            }
+
+            .info-grid-2 {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 6px;
+            }
+
+            .info-box {
+                border-radius: 10px;
+                padding: 8px 6px;
+            }
+
+            .info-label {
+                font-size: 10px;
+                margin-bottom: 4px;
+            }
+
+            .info-value {
+                font-size: 12px;
+            }
+
+            .time-weather-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 6px;
+                margin-top: 6px;
+            }
+
+            .time-box {
+                border-radius: 12px;
+                padding: 8px;
+            }
+
+            .time-title {
+                font-size: 10px;
+                margin-bottom: 4px;
+            }
+
+            .time-icon {
+                font-size: 26px;
+                margin-bottom: 2px;
+            }
+
+            .time-temp {
+                font-size: 16px;
+                margin-bottom: 2px;
+            }
+
+            .time-text {
+                font-size: 11px;
+            }
+
+            .forecast-list {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 6px;
+            }
+
+            .forecast-box {
+                border-radius: 12px;
+                padding: 8px;
+            }
+
+            .forecast-top {
+                margin-bottom: 5px;
+            }
+
+            .forecast-day {
+                font-size: 13px;
+            }
+
+            .forecast-date {
+                font-size: 10px;
+                margin-top: 1px;
+            }
+
+            .forecast-icon {
+                font-size: 26px;
+            }
+
+            .forecast-text {
+                font-size: 12px;
+                margin-bottom: 6px;
+            }
+
+            .forecast-detail {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 5px;
+            }
+
+            .mini-box {
+                border-radius: 9px;
+                padding: 6px;
+            }
+
+            .mini-label {
+                font-size: 9px;
+                margin-bottom: 3px;
+            }
+
+            .mini-value {
+                font-size: 10px;
+            }
+
+            .link-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+                margin-top: 8px;
+            }
+
+            .link-box {
+                border-radius: 14px;
+                padding: 14px 8px;
+            }
+
+            .link-icon {
+                font-size: 30px;
+                margin-bottom: 6px;
+            }
+
+            .link-title {
+                font-size: 13px;
+                margin-bottom: 4px;
+            }
+
+            .link-desc {
+                font-size: 10px;
+                line-height: 1.3;
+            }
+
+            .index-card {
+                min-height: auto;
+            }
+
+            .index-icon {
+                font-size: 26px;
+                margin-bottom: 4px;
+            }
+
+            .index-title {
+                font-size: 13px;
+                margin-bottom: 4px;
+            }
+
+            .index-result {
+                font-size: 17px;
+                margin-bottom: 4px;
+            }
+
+            .index-desc {
+                font-size: 10px;
+                line-height: 1.35;
+            }
+
+            .earthquake-list {
+                gap: 6px;
+            }
+
+            .earthquake-item {
+                border-radius: 12px;
+                padding: 9px;
+            }
+
+            .earthquake-title {
+                font-size: 12px;
+            }
+
+            .magnitude {
+                font-size: 12px;
+            }
+
+            .earthquake-meta {
+                font-size: 10px;
+            }
+
+            .status {
+                margin-top: 8px;
+                padding: 8px 10px;
+                border-radius: 12px;
+                font-size: 10px;
+                line-height: 1.35;
+            }
+
+            .footer {
+                display: none;
+            }
+
+            .slide:nth-child(2) .layout-2,
+            .slide:nth-child(5) .layout-2 > section:nth-child(2) {
+                display: none;
             }
         }
     </style>
@@ -555,10 +872,10 @@
         <div class="slide-nav">
             <div class="tab-group">
                 <button class="slide-tab active" onclick="showSlide(0)">날씨</button>
-                <button class="slide-tab" onclick="showSlide(1)">대중교통</button>
-                <button class="slide-tab" onclick="showSlide(2)">생활정보</button>
-                <button class="slide-tab" onclick="showSlide(3)">주변시설</button>
-                <button class="slide-tab" onclick="showSlide(4)">지진정보</button>
+                <button class="slide-tab" onclick="showSlide(1)">교통</button>
+                <button class="slide-tab" onclick="showSlide(2)">생활</button>
+                <button class="slide-tab" onclick="showSlide(3)">시설</button>
+                <button class="slide-tab" onclick="showSlide(4)">지진</button>
             </div>
             <button class="refresh-btn" onclick="loadAll()">새로고침</button>
         </div>
@@ -569,7 +886,7 @@
                     <div class="page">
                         <div class="header">
                             <h1 class="title">날씨 정보</h1>
-                            <div class="subtitle">현재 위치 기준 현재 / 오전 / 오후 / 내일 / 모레 날씨</div>
+                            <div class="subtitle">현재 / 오전 / 오후 / 내일 / 모레</div>
                         </div>
 
                         <div class="location-box">
@@ -591,7 +908,7 @@
 
                                 <div class="info-grid">
                                     <div class="info-box">
-                                        <div class="info-label">체감 온도</div>
+                                        <div class="info-label">체감</div>
                                         <div id="apparentTemp" class="info-value">--°C</div>
                                     </div>
 
@@ -602,27 +919,27 @@
 
                                     <div class="info-box">
                                         <div class="info-label">풍속</div>
-                                        <div id="windSpeed" class="info-value">-- km/h</div>
+                                        <div id="windSpeed" class="info-value">--</div>
                                     </div>
 
                                     <div class="info-box">
-                                        <div class="info-label">업데이트</div>
+                                        <div class="info-label">갱신</div>
                                         <div id="updatedTime" class="info-value">--:--</div>
                                     </div>
                                 </div>
 
-                                <div class="section-label" style="margin-top: 16px;">오늘 시간대별</div>
+                                <div class="section-label" style="margin-top: 12px;">오늘 시간대별</div>
 
                                 <div class="time-weather-grid">
                                     <div class="time-box">
-                                        <div class="time-title">오전 06:00 ~ 11:00</div>
+                                        <div class="time-title">오전</div>
                                         <div id="morningIcon" class="time-icon">🌤️</div>
                                         <div id="morningTemp" class="time-temp">--°C</div>
                                         <div id="morningText" class="time-text">확인 중</div>
                                     </div>
 
                                     <div class="time-box">
-                                        <div class="time-title">오후 12:00 ~ 18:00</div>
+                                        <div class="time-title">오후</div>
                                         <div id="afternoonIcon" class="time-icon">🌤️</div>
                                         <div id="afternoonTemp" class="time-temp">--°C</div>
                                         <div id="afternoonText" class="time-text">확인 중</div>
@@ -647,18 +964,18 @@
 
                                         <div class="forecast-detail">
                                             <div class="mini-box">
-                                                <div class="mini-label">최저 / 최고</div>
-                                                <div id="tomorrowTemp" class="mini-value">-- / --</div>
+                                                <div class="mini-label">최저/최고</div>
+                                                <div id="tomorrowTemp" class="mini-value">--</div>
                                             </div>
 
                                             <div class="mini-box">
-                                                <div class="mini-label">강수 확률</div>
+                                                <div class="mini-label">강수</div>
                                                 <div id="tomorrowRain" class="mini-value">--%</div>
                                             </div>
 
                                             <div class="mini-box">
-                                                <div class="mini-label">최대 풍속</div>
-                                                <div id="tomorrowWind" class="mini-value">-- km/h</div>
+                                                <div class="mini-label">풍속</div>
+                                                <div id="tomorrowWind" class="mini-value">--</div>
                                             </div>
 
                                             <div class="mini-box">
@@ -681,18 +998,18 @@
 
                                         <div class="forecast-detail">
                                             <div class="mini-box">
-                                                <div class="mini-label">최저 / 최고</div>
-                                                <div id="afterTomorrowTemp" class="mini-value">-- / --</div>
+                                                <div class="mini-label">최저/최고</div>
+                                                <div id="afterTomorrowTemp" class="mini-value">--</div>
                                             </div>
 
                                             <div class="mini-box">
-                                                <div class="mini-label">강수 확률</div>
+                                                <div class="mini-label">강수</div>
                                                 <div id="afterTomorrowRain" class="mini-value">--%</div>
                                             </div>
 
                                             <div class="mini-box">
-                                                <div class="mini-label">최대 풍속</div>
-                                                <div id="afterTomorrowWind" class="mini-value">-- km/h</div>
+                                                <div class="mini-label">풍속</div>
+                                                <div id="afterTomorrowWind" class="mini-value">--</div>
                                             </div>
 
                                             <div class="mini-box">
@@ -706,7 +1023,7 @@
                         </div>
 
                         <div id="weatherStatus" class="status">
-                            브라우저에서 위치 권한을 허용하면 현재 위치의 날씨를 볼 수 있습니다.
+                            위치 권한을 허용하면 날씨를 볼 수 있습니다.
                         </div>
 
                         <div class="footer">Weather data by Open-Meteo</div>
@@ -716,8 +1033,8 @@
                 <section class="slide">
                     <div class="page">
                         <div class="header">
-                            <h1 class="title">대중교통 정보</h1>
-                            <div class="subtitle">API 키 없이 현재 위치 기준 지도 검색 링크 제공</div>
+                            <h1 class="title">대중교통</h1>
+                            <div class="subtitle">현재 위치 기준 지도 검색 링크</div>
                         </div>
 
                         <div class="location-box">
@@ -728,26 +1045,26 @@
                         <div class="link-grid">
                             <a id="busStopLink" class="link-box" href="#" target="_blank" rel="noopener noreferrer">
                                 <div class="link-icon">🚌</div>
-                                <div class="link-title">주변 버스정류장</div>
-                                <div class="link-desc">현재 위치 근처 정류장 검색</div>
+                                <div class="link-title">버스정류장</div>
+                                <div class="link-desc">근처 정류장 검색</div>
                             </a>
 
                             <a id="subwayLink" class="link-box" href="#" target="_blank" rel="noopener noreferrer">
                                 <div class="link-icon">🚇</div>
-                                <div class="link-title">주변 지하철역</div>
-                                <div class="link-desc">가까운 지하철역 검색</div>
+                                <div class="link-title">지하철역</div>
+                                <div class="link-desc">근처 역 검색</div>
                             </a>
 
                             <a id="naverMapLink" class="link-box" href="#" target="_blank" rel="noopener noreferrer">
                                 <div class="link-icon">🗺️</div>
                                 <div class="link-title">네이버지도</div>
-                                <div class="link-desc">현재 위치 주변 지도 열기</div>
+                                <div class="link-desc">주변 지도 열기</div>
                             </a>
 
                             <a id="googleTransitLink" class="link-box" href="#" target="_blank" rel="noopener noreferrer">
                                 <div class="link-icon">🚏</div>
-                                <div class="link-title">대중교통 검색</div>
-                                <div class="link-desc">구글맵 대중교통 검색</div>
+                                <div class="link-title">교통검색</div>
+                                <div class="link-desc">구글맵 검색</div>
                             </a>
                         </div>
 
@@ -755,20 +1072,20 @@
                             <div class="box">
                                 <div class="section-label">사용 방식</div>
                                 <div class="link-desc">
-                                    로컬 HTML 하나만 사용하는 조건이라 실시간 도착 API 대신 지도 검색 링크 방식으로 구성했습니다.
+                                    API 키 없이 지도 검색 링크 방식으로 구성했습니다.
                                 </div>
                             </div>
 
                             <div class="box">
                                 <div class="section-label">확장 가능</div>
                                 <div class="link-desc">
-                                    공공데이터 API 키와 백엔드 프록시를 붙이면 버스/지하철 실시간 도착 정보까지 확장 가능합니다.
+                                    공공데이터 API 키와 백엔드 프록시를 붙이면 실시간 도착 정보도 가능합니다.
                                 </div>
                             </div>
                         </div>
 
                         <div id="transportStatus" class="status warning">
-                            위치 권한 허용 후 주변 대중교통 링크가 자동 생성됩니다.
+                            위치 권한 허용 후 링크가 생성됩니다.
                         </div>
 
                         <div class="footer">Map links by Naver Map / Google Maps</div>
@@ -779,7 +1096,7 @@
                     <div class="page">
                         <div class="header">
                             <h1 class="title">생활 정보</h1>
-                            <div class="subtitle">미세먼지 / 초미세먼지 / 자외선 / 일출·일몰 / 생활지수</div>
+                            <div class="subtitle">미세먼지 / 자외선 / 생활지수</div>
                         </div>
 
                         <div class="location-box">
@@ -793,22 +1110,22 @@
 
                                 <div class="info-grid-2">
                                     <div class="info-box">
-                                        <div class="info-label">미세먼지 PM10</div>
+                                        <div class="info-label">PM10</div>
                                         <div id="pm10" class="info-value">--</div>
                                     </div>
 
                                     <div class="info-box">
-                                        <div class="info-label">초미세먼지 PM2.5</div>
+                                        <div class="info-label">PM2.5</div>
                                         <div id="pm25" class="info-value">--</div>
                                     </div>
 
                                     <div class="info-box">
-                                        <div class="info-label">오존 O₃</div>
+                                        <div class="info-label">오존</div>
                                         <div id="ozone" class="info-value">--</div>
                                     </div>
 
                                     <div class="info-box">
-                                        <div class="info-label">자외선 UV</div>
+                                        <div class="info-label">UV</div>
                                         <div id="uvIndex" class="info-value">--</div>
                                     </div>
                                 </div>
@@ -865,8 +1182,8 @@
                 <section class="slide">
                     <div class="page">
                         <div class="header">
-                            <h1 class="title">주변 편의시설</h1>
-                            <div class="subtitle">API 키 없이 현재 위치 기준 지도 검색 링크 제공</div>
+                            <h1 class="title">주변 시설</h1>
+                            <div class="subtitle">현재 위치 기준 빠른 검색</div>
                         </div>
 
                         <div class="location-box">
@@ -878,54 +1195,54 @@
                             <a id="convenienceLink" class="link-box" href="#" target="_blank" rel="noopener noreferrer">
                                 <div class="link-icon">🏪</div>
                                 <div class="link-title">편의점</div>
-                                <div class="link-desc">근처 편의점 찾기</div>
+                                <div class="link-desc">근처 편의점</div>
                             </a>
 
                             <a id="pharmacyLink" class="link-box" href="#" target="_blank" rel="noopener noreferrer">
                                 <div class="link-icon">💊</div>
                                 <div class="link-title">약국</div>
-                                <div class="link-desc">근처 약국 찾기</div>
+                                <div class="link-desc">근처 약국</div>
                             </a>
 
                             <a id="hospitalLink" class="link-box" href="#" target="_blank" rel="noopener noreferrer">
                                 <div class="link-icon">🏥</div>
                                 <div class="link-title">병원</div>
-                                <div class="link-desc">근처 병원 찾기</div>
+                                <div class="link-desc">근처 병원</div>
                             </a>
 
                             <a id="gasStationLink" class="link-box" href="#" target="_blank" rel="noopener noreferrer">
                                 <div class="link-icon">⛽</div>
                                 <div class="link-title">주유소</div>
-                                <div class="link-desc">근처 주유소 찾기</div>
+                                <div class="link-desc">근처 주유소</div>
                             </a>
 
                             <a id="cafeLink" class="link-box" href="#" target="_blank" rel="noopener noreferrer">
                                 <div class="link-icon">☕</div>
                                 <div class="link-title">카페</div>
-                                <div class="link-desc">근처 카페 찾기</div>
+                                <div class="link-desc">근처 카페</div>
                             </a>
 
                             <a id="atmLink" class="link-box" href="#" target="_blank" rel="noopener noreferrer">
                                 <div class="link-icon">🏧</div>
                                 <div class="link-title">ATM</div>
-                                <div class="link-desc">근처 ATM 찾기</div>
+                                <div class="link-desc">근처 ATM</div>
                             </a>
 
                             <a id="toiletLink" class="link-box" href="#" target="_blank" rel="noopener noreferrer">
                                 <div class="link-icon">🚻</div>
                                 <div class="link-title">화장실</div>
-                                <div class="link-desc">근처 화장실 찾기</div>
+                                <div class="link-desc">근처 화장실</div>
                             </a>
 
                             <a id="parkingLink" class="link-box" href="#" target="_blank" rel="noopener noreferrer">
                                 <div class="link-icon">🅿️</div>
                                 <div class="link-title">주차장</div>
-                                <div class="link-desc">근처 주차장 찾기</div>
+                                <div class="link-desc">근처 주차장</div>
                             </a>
                         </div>
 
                         <div id="facilityStatus" class="status warning">
-                            위치 권한 허용 후 주변 시설 링크가 자동 생성됩니다.
+                            위치 권한 허용 후 링크가 생성됩니다.
                         </div>
 
                         <div class="footer">Facility links by Naver Map</div>
@@ -935,8 +1252,8 @@
                 <section class="slide">
                     <div class="page">
                         <div class="header">
-                            <h1 class="title">최근 지진 정보</h1>
-                            <div class="subtitle">최근 24시간 규모 4.5 이상 주요 지진 정보</div>
+                            <h1 class="title">최근 지진</h1>
+                            <div class="subtitle">최근 24시간 규모 4.5 이상</div>
                         </div>
 
                         <div class="layout-2">
@@ -960,7 +1277,7 @@
 
                                     <div class="info-box">
                                         <div class="info-label">범위</div>
-                                        <div class="info-value">최근 24시간</div>
+                                        <div class="info-value">24시간</div>
                                     </div>
 
                                     <div class="info-box">
@@ -975,7 +1292,7 @@
                                 </div>
 
                                 <div class="status warning">
-                                    전세계 주요 지진 기준입니다. 국내 재난문자나 기상청 공식 발표와 함께 확인하는 게 안전합니다.
+                                    전세계 주요 지진 기준입니다.
                                 </div>
                             </section>
                         </div>
@@ -1184,7 +1501,7 @@
             current.relative_humidity_2m + "%";
 
         document.getElementById("windSpeed").textContent =
-            current.wind_speed_10m + " km/h";
+            Math.round(current.wind_speed_10m) + "km/h";
 
         document.getElementById("updatedTime").textContent =
             formatTime(current.time);
@@ -1266,13 +1583,13 @@
         document.getElementById(prefix + "SimpleDate").textContent = formatSimpleDate(daily.time[index]);
 
         document.getElementById(prefix + "Temp").textContent =
-            `${minTemp}°C / ${maxTemp}°C`;
+            `${minTemp}°/${maxTemp}°`;
 
         document.getElementById(prefix + "Rain").textContent =
             daily.precipitation_probability_max[index] + "%";
 
         document.getElementById(prefix + "Wind").textContent =
-            daily.wind_speed_10m_max[index] + " km/h";
+            Math.round(daily.wind_speed_10m_max[index]) + "km/h";
     }
 
     function findNearestHourly(hourly) {
@@ -1319,9 +1636,9 @@
         const [pm10Level] = getPm10Level(pm10);
         const [pm25Level, pm25Desc] = getPm25Level(pm25);
 
-        document.getElementById("pm10").textContent = `${pm10}㎍/㎥ · ${pm10Level}`;
-        document.getElementById("pm25").textContent = `${pm25}㎍/㎥ · ${pm25Level}`;
-        document.getElementById("ozone").textContent = `${ozone}㎍/㎥`;
+        document.getElementById("pm10").textContent = `${pm10} · ${pm10Level}`;
+        document.getElementById("pm25").textContent = `${pm25} · ${pm25Level}`;
+        document.getElementById("ozone").textContent = `${ozone}`;
         document.getElementById("uvIndex").textContent = `${uv}`;
 
         document.getElementById("sunrise").textContent = formatTime(daily.sunrise[0]);
@@ -1336,10 +1653,10 @@
 
         if (todayRain >= 60 || isRainyNow) {
             document.getElementById("umbrellaIndex").textContent = "필수";
-            document.getElementById("umbrellaDesc").textContent = "비 가능성이 높습니다. 작은 우산이라도 챙기는 게 좋습니다.";
+            document.getElementById("umbrellaDesc").textContent = "비 가능성이 높습니다.";
         } else if (todayRain >= 30) {
             document.getElementById("umbrellaIndex").textContent = "권장";
-            document.getElementById("umbrellaDesc").textContent = "비 가능성이 있습니다. 외출 시간이 길면 챙기세요.";
+            document.getElementById("umbrellaDesc").textContent = "외출 길면 챙기세요.";
         } else {
             document.getElementById("umbrellaIndex").textContent = "불필요";
             document.getElementById("umbrellaDesc").textContent = "강수 가능성이 낮습니다.";
@@ -1350,15 +1667,15 @@
             document.getElementById("maskDesc").textContent = pm25Desc;
         } else {
             document.getElementById("maskIndex").textContent = "무난";
-            document.getElementById("maskDesc").textContent = "대기질이 크게 나쁘지 않습니다.";
+            document.getElementById("maskDesc").textContent = "대기질이 나쁘지 않습니다.";
         }
 
         if (todayRain >= 40 || tomorrowRain >= 40) {
             document.getElementById("carWashIndex").textContent = "비추천";
-            document.getElementById("carWashDesc").textContent = "오늘이나 내일 비 가능성이 있어 세차 효율이 낮습니다.";
+            document.getElementById("carWashDesc").textContent = "비 가능성이 있습니다.";
         } else {
             document.getElementById("carWashIndex").textContent = "가능";
-            document.getElementById("carWashDesc").textContent = "강수 가능성이 낮아 세차하기 무난합니다.";
+            document.getElementById("carWashDesc").textContent = "세차하기 무난합니다.";
         }
 
         setStatus("lifeStatus", "생활 정보가 정상적으로 업데이트되었습니다.");
@@ -1406,7 +1723,7 @@
             list.innerHTML = `
                 <div class="earthquake-item">
                     <div class="earthquake-title">최근 24시간 규모 4.5 이상 지진 정보가 없습니다.</div>
-                    <div class="earthquake-meta">현재 기준으로 주요 지진 데이터가 없습니다.</div>
+                    <div class="earthquake-meta">현재 기준 주요 지진 데이터가 없습니다.</div>
                 </div>
             `;
 
@@ -1435,7 +1752,7 @@
                         <div class="magnitude">M ${props.mag}</div>
                     </div>
                     <div class="earthquake-meta">
-                        발생 시각: ${time}<br>
+                        발생: ${time}<br>
                         깊이: ${feature.geometry.coordinates[2]} km
                     </div>
                 </div>
