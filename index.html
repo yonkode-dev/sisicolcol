@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" >
+<html lang="ko">
 <head>
     <meta charset="UTF-8" />
     <title>생활 정보 대시보드</title>
@@ -102,6 +102,7 @@
         .slider {
             width: 100%;
             overflow: hidden;
+            touch-action: pan-y;
         }
 
         .slider-track {
@@ -530,9 +531,6 @@
             }
         }
 
-        /* =========================
-           iPhone / Mobile Compact Mode
-           ========================= */
         @media (max-width: 540px) {
             html,
             body {
@@ -1071,16 +1069,12 @@
                         <div class="layout-2" style="margin-top: 14px;">
                             <div class="box">
                                 <div class="section-label">사용 방식</div>
-                                <div class="link-desc">
-                                    API 키 없이 지도 검색 링크 방식으로 구성했습니다.
-                                </div>
+                                <div class="link-desc">API 키 없이 지도 검색 링크 방식으로 구성했습니다.</div>
                             </div>
 
                             <div class="box">
                                 <div class="section-label">확장 가능</div>
-                                <div class="link-desc">
-                                    공공데이터 API 키와 백엔드 프록시를 붙이면 실시간 도착 정보도 가능합니다.
-                                </div>
+                                <div class="link-desc">공공데이터 API 키와 백엔드 프록시를 붙이면 실시간 도착 정보도 가능합니다.</div>
                             </div>
                         </div>
 
@@ -1341,15 +1335,80 @@
         99: ["⛈️", "강한 우박 동반 천둥번개"]
     };
 
+    let currentSlideIndex = 0;
+    const maxSlideIndex = 4;
+
     function showSlide(index) {
+        currentSlideIndex = Math.max(0, Math.min(index, maxSlideIndex));
+
         const sliderTrack = document.getElementById("sliderTrack");
         const tabs = document.querySelectorAll(".slide-tab");
 
-        sliderTrack.style.transform = `translateX(-${index * 20}%)`;
+        sliderTrack.style.transform = `translateX(-${currentSlideIndex * 20}%)`;
 
         tabs.forEach((tab, tabIndex) => {
-            tab.classList.toggle("active", tabIndex === index);
+            tab.classList.toggle("active", tabIndex === currentSlideIndex);
         });
+    }
+
+    function enableSwipeNavigation() {
+        const slider = document.querySelector(".slider");
+
+        if (!slider) {
+            return;
+        }
+
+        let startX = 0;
+        let startY = 0;
+        let endX = 0;
+        let endY = 0;
+        let isTouching = false;
+
+        slider.addEventListener("touchstart", function (event) {
+            if (!event.touches || event.touches.length === 0) {
+                return;
+            }
+
+            startX = event.touches[0].clientX;
+            startY = event.touches[0].clientY;
+            endX = startX;
+            endY = startY;
+            isTouching = true;
+        }, { passive: true });
+
+        slider.addEventListener("touchmove", function (event) {
+            if (!isTouching || !event.touches || event.touches.length === 0) {
+                return;
+            }
+
+            endX = event.touches[0].clientX;
+            endY = event.touches[0].clientY;
+        }, { passive: true });
+
+        slider.addEventListener("touchend", function () {
+            if (!isTouching) {
+                return;
+            }
+
+            const diffX = endX - startX;
+            const diffY = endY - startY;
+            const isHorizontalSwipe =
+                Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY) * 1.4;
+
+            if (isHorizontalSwipe) {
+                if (diffX < 0) {
+                    showSlide(currentSlideIndex + 1);
+                } else {
+                    showSlide(currentSlideIndex - 1);
+                }
+            }
+
+            startX = 0;
+            startY = 0;
+            endX = 0;
+            endY = 0;
+            isTouching = false;
+        }, { passive: true });
     }
 
     function setStatus(targetId, message, type = "normal") {
@@ -1856,6 +1915,7 @@
         loadEarthquakesOnly();
     }
 
+    enableSwipeNavigation();
     loadAll();
 </script>
 </body>
