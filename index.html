@@ -52,6 +52,47 @@
             overflow: hidden;
         }
 
+        .global-error {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            margin-bottom: 12px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .global-error strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .global-error p {
+            margin: 0;
+        }
+
+        .global-error button {
+            border: none;
+            background: #991b1b;
+            color: #ffffff;
+            border-radius: 10px;
+            padding: 7px 10px;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .global-error.hidden {
+            display: none;
+        }
+
         .slide-nav {
             display: flex;
             justify-content: space-between;
@@ -556,6 +597,23 @@
                 overflow: hidden;
             }
 
+            .global-error {
+                padding: 8px 10px;
+                margin-bottom: 8px;
+                border-radius: 12px;
+                font-size: 10px;
+            }
+
+            .global-error strong {
+                font-size: 11px;
+            }
+
+            .global-error button {
+                padding: 6px 8px;
+                font-size: 10px;
+                border-radius: 8px;
+            }
+
             .slide-nav {
                 gap: 8px;
                 margin-bottom: 8px;
@@ -582,6 +640,10 @@
 
             .slider {
                 height: calc(100dvh - 82px);
+            }
+
+            .app-card.has-global-error .slider {
+                height: calc(100dvh - 132px);
             }
 
             .slider-track {
@@ -867,6 +929,14 @@
 <body>
 <div class="container">
     <div class="app-card">
+        <div id="globalError" class="global-error hidden">
+            <div>
+                <strong>오류 발생</strong>
+                <p id="globalErrorMessage">오류 내용을 확인할 수 없습니다.</p>
+            </div>
+            <button type="button" onclick="hideGlobalError()">닫기</button>
+        </div>
+
         <div class="slide-nav">
             <div class="tab-group">
                 <button class="slide-tab active" onclick="showSlide(0)">날씨</button>
@@ -1411,6 +1481,37 @@
         }, { passive: true });
     }
 
+    function showGlobalError(message) {
+        const globalError = document.getElementById("globalError");
+        const globalErrorMessage = document.getElementById("globalErrorMessage");
+        const appCard = document.querySelector(".app-card");
+
+        if (!globalError || !globalErrorMessage) {
+            alert(message);
+            return;
+        }
+
+        globalErrorMessage.textContent = message || "알 수 없는 오류가 발생했습니다.";
+        globalError.classList.remove("hidden");
+
+        if (appCard) {
+            appCard.classList.add("has-global-error");
+        }
+    }
+
+    function hideGlobalError() {
+        const globalError = document.getElementById("globalError");
+        const appCard = document.querySelector(".app-card");
+
+        if (globalError) {
+            globalError.classList.add("hidden");
+        }
+
+        if (appCard) {
+            appCard.classList.remove("has-global-error");
+        }
+    }
+
     function setStatus(targetId, message, type = "normal") {
         const status = document.getElementById(targetId);
         status.textContent = message;
@@ -1826,7 +1927,9 @@
             const earthquakeData = await fetchEarthquakes();
             renderEarthquakes(earthquakeData);
         } catch (error) {
-            setStatus("earthquakeStatus", error.message || "지진 정보를 가져오지 못했습니다.", "error");
+            const message = error.message || "지진 정보를 가져오지 못했습니다.";
+            setStatus("earthquakeStatus", message, "error");
+            showGlobalError(message);
         }
     }
 
@@ -1858,10 +1961,14 @@
 
             setStatus("weatherStatus", "날씨 정보가 정상적으로 업데이트되었습니다.");
         } catch (error) {
-            setStatus("weatherStatus", error.message || "오류가 발생했습니다.", "error");
+            const message = error.message || "오류가 발생했습니다.";
+
+            setStatus("weatherStatus", message, "error");
             setStatus("lifeStatus", "생활 정보를 가져오지 못했습니다.", "error");
             setStatus("transportStatus", "위치 또는 네트워크 정보를 확인하지 못했습니다.", "error");
             setStatus("facilityStatus", "위치 또는 네트워크 정보를 확인하지 못했습니다.", "error");
+
+            showGlobalError(message);
         }
     }
 
@@ -1886,6 +1993,8 @@
         document.getElementById("transportLocation").textContent = "브라우저 위치 권한을 확인해주세요.";
         document.getElementById("lifeLocation").textContent = "브라우저 위치 권한을 확인해주세요.";
         document.getElementById("facilityLocation").textContent = "브라우저 위치 권한을 확인해주세요.";
+
+        showGlobalError(message);
     }
 
     function loadLocationBasedInfo() {
@@ -1896,6 +2005,8 @@
             setStatus("transportStatus", message, "error");
             setStatus("lifeStatus", message, "error");
             setStatus("facilityStatus", message, "error");
+
+            showGlobalError(message);
             return;
         }
 
@@ -1911,6 +2022,7 @@
     }
 
     function loadAll() {
+        hideGlobalError();
         loadLocationBasedInfo();
         loadEarthquakesOnly();
     }
