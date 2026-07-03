@@ -1618,29 +1618,31 @@
     async function reverseGeocode(latitude, longitude) {
         try {
             const url =
-                "https://geocoding-api.open-meteo.com/v1/reverse" +
+                "https://api.bigdatacloud.net/data/reverse-geocode-client" +
                 `?latitude=${latitude}` +
                 `&longitude=${longitude}` +
-                "&language=ko&format=json";
+                "&localityLanguage=ko";
 
             const response = await fetch(url);
-            const data = await response.json();
 
-            if (data.results && data.results.length > 0) {
-                const place = data.results[0];
-
-                return [
-                    place.country,
-                    place.admin1,
-                    place.admin2,
-                    place.name
-                ]
-                    .filter(Boolean)
-                    .join(" ");
+            if (!response.ok) {
+                throw new Error("지역 정보를 가져오지 못했습니다.");
             }
 
-            return `위도 ${latitude.toFixed(2)}, 경도 ${longitude.toFixed(2)}`;
-        } catch {
+            const data = await response.json();
+
+            return [
+                data.countryName,
+                data.principalSubdivision,
+                data.city,
+                data.locality
+            ]
+                .filter(Boolean)
+                .filter((value, index, array) => array.indexOf(value) === index)
+                .join(" ");
+        } catch (error) {
+            console.warn("지역명 변환 실패:", error);
+
             return `위도 ${latitude.toFixed(2)}, 경도 ${longitude.toFixed(2)}`;
         }
     }
