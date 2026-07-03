@@ -1638,7 +1638,47 @@
             throw new Error("대기질 정보를 가져오지 못했습니다.");
         }
     }
+    
+    function renderAirQualityOnly(airQualityData) {
+        const index = findNearestHourly(airQualityData.hourly);
+        const hourly = airQualityData.hourly;
 
+        const pm10 = Math.round(hourly.pm10[index]);
+        const pm25 = Math.round(hourly.pm2_5[index]);
+        const ozone = Math.round(hourly.ozone[index]);
+        const uvRaw = hourly.uv_index ? hourly.uv_index[index] : null;
+        const uv = uvRaw === null || uvRaw === undefined
+            ? "--"
+            : Math.round(uvRaw * 10) / 10;
+
+        const [pm10Level] = getPm10Level(pm10);
+        const [pm25Level, pm25Desc] = getPm25Level(pm25);
+
+        document.getElementById("pm10").textContent = `${pm10} · ${pm10Level}`;
+        document.getElementById("pm25").textContent = `${pm25} · ${pm25Level}`;
+        document.getElementById("ozone").textContent = `${ozone}`;
+        document.getElementById("uvIndex").textContent = `${uv}`;
+
+        if (pm25 > 35 || pm10 > 80) {
+            document.getElementById("maskIndex").textContent = "권장";
+            document.getElementById("maskDesc").textContent = pm25Desc;
+        } else {
+            document.getElementById("maskIndex").textContent = "무난";
+            document.getElementById("maskDesc").textContent = "대기질이 나쁘지 않습니다.";
+        }
+
+        document.getElementById("umbrellaIndex").textContent = "--";
+        document.getElementById("umbrellaDesc").textContent = "날씨 정보가 필요합니다.";
+
+        document.getElementById("carWashIndex").textContent = "--";
+        document.getElementById("carWashDesc").textContent = "날씨 정보가 필요합니다.";
+
+        document.getElementById("sunrise").textContent = "--:--";
+        document.getElementById("sunset").textContent = "--:--";
+
+        setStatus("lifeStatus", "대기질 정보는 정상적으로 업데이트되었습니다. 날씨 정보는 가져오지 못했습니다.", "warning");
+    }
+    
     async function fetchEarthquakes() {
         const url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_day.geojson";
 
@@ -1828,7 +1868,10 @@
         const pm10 = Math.round(hourly.pm10[index]);
         const pm25 = Math.round(hourly.pm2_5[index]);
         const ozone = Math.round(hourly.ozone[index]);
-        const uv = Math.round((hourly.uv_index[index] || daily.uv_index_max[0] || 0) * 10) / 10;
+        const uvRaw = hourly.uv_index ? hourly.uv_index[index] : null;
+        const uv = uvRaw === null || uvRaw === undefined
+            ? "--"
+            : Math.round(uvRaw * 10) / 10;
 
         const [pm10Level] = getPm10Level(pm10);
         const [pm25Level, pm25Desc] = getPm25Level(pm25);
@@ -2023,8 +2066,12 @@
 
             if (weatherData && airQualityData) {
                 renderLifeInfo(weatherData, airQualityData);
+            } else if (!weatherData && airQualityData) {
+                renderAirQualityOnly(airQualityData);
             } else if (weatherData && !airQualityData) {
                 setStatus("lifeStatus", "대기질 정보를 가져오지 못해 생활지수를 일부 표시할 수 없습니다.", "warning");
+            } else {
+                setStatus("lifeStatus", "날씨와 대기질 정보를 모두 가져오지 못했습니다.", "error");
             }
         } catch (error) {
             const message = error.message || "오류가 발생했습니다.";
