@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>생활 정보 대시보드</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: "Pretendard", "Noto Sans KR", Arial, sans-serif;
+            background:
+                radial-gradient(circle at top left, #8ec5fc 0, transparent 32%),
+                radial-gradient(circle at bottom right, #e0c3fc 0, transparent 32%),
+                linear-gradient(135deg, #eef4ff, #f8f9ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1f2937;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1220px;
+            height: 100vh;
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .app-card {
+            width: 100%;
+            max-height: calc(100vh - 36px);
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(14px);
+            border-radius: 24px;
+            padding: 16px;
+            box-shadow: 0 18px 45px rgba(31, 41, 55, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            overflow: hidden;
+        }
+
+        .slide-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .tab-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .slide-tab,
+        .refresh-btn {
+            border: none;
+            padding: 9px 14px;
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: 900;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+
+        .slide-tab {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .slide-tab.active {
+            background: #2563eb;
+            color: #ffffff;
+        }
+
+        .refresh-btn {
+            background: #2563eb;
+            color: white;
+        }
+
+        .slide-tab:hover,
+        .refresh-btn:hover,
+        .link-box:hover {
+            transform: translateY(-2px);
+        }
+
+        .slider {
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .slider-track {
+            display: flex;
+            width: 500%;
+            transition: transform 0.35s ease;
+        }
+
+        .slide {
+            width: 20%;
+            flex-shrink: 0;
+            padding: 0 2px;
+        }
+
+        .page {
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            margin-bottom: 14px;
+        }
+
+        .title {
+            margin: 0;
+            font-size: 26px;
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            margin-top: 5px;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .location-box,
+        .status {
+            border-radius: 16px;
+            padding: 12px 14px;
+            margin-bottom: 14px;
+        }
+
+        .location-box {
+            background: #f3f6fb;
+        }
+
+        .location-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+
+        .location-value {
+            font-size: 17px;
+            font-weight: 900;
+            color: #111827;
+        }
+
+        .status {
+            margin-top: 14px;
+            margin-bottom: 0;
+            background: #eff6ff;
+            color: #1e40af;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .error {
+            background: #fef2f2;
+            color: #b91c1c;
+        }
+
+        .warning {
+            background: #fff7ed;
+            color: #9a3412;
+        }
+
+        .layout-2 {
+            display: grid;
+            grid-template-columns: 1.05fr 0.95fr;
+            gap: 14px;
+        }
+
+        .layout-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+
+        .box,
+        .link-box {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 18px;
+            box-shadow: 0 8px 20px rgba(31, 41, 55, 0.07);
+            border: 1px solid #eef2f7;
+        }
+
+        .section-label {
+            font-size: 14px;
+            color: #6b7280;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .main-weather {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            align-items: center;
+            gap: 14px;
+            text-align: left;
+        }
+
+        .weather-icon {
+            font-size: 62px;
+            line-height: 1;
+            text-align: center;
+        }
+
+        .temperature {
+            font-size: 54px;
+            font-weight: 900;
+            letter-spacing: -3px;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .weather-text {
+            margin-top: 5px;
+            font-size: 19px;
+            font-weight: 800;
+            color: #374151;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .info-grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .info-box {
+            background: #f3f6fb;
+            border-radius: 15px;
+            padding: 12px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 6px;
+        }
+
+        .info-value {
+            font-size: 17px;
+            font-weight: 900;
+            color: #111827;
+        }
+
+        .time-weather-grid,
+        .forecast-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .time-weather-grid {
+            margin-top: 10px;
+        }
+
+        .time-box,
+        .forecast-box {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 13px;
+            border: 1px solid #eef2f7;
+        }
+
+        .time-box {
+            text-align: center;
+        }
+
+        .time-title {
+            font-size: 13px;
+            color: #6b7280;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .time-icon {
+            font-size: 34px;
+            margin-bottom: 4px;
+        }
+
+        .time-temp {
+            font-size: 21px;
+            font-weight: 900;
+            margin-bottom: 4px;
+        }
+
+        .time-text {
+            font-size: 14px;
+            font-weight: 800;
+            color: #374151;
+        }
+
+        .forecast-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .forecast-day {
+            font-size: 17px;
+            font-weight: 900;
+        }
+
+        .forecast-date {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 3px;
+        }
+
+        .forecast-icon {
+            font-size: 36px;
+        }
+
+        .forecast-text {
+            font-size: 16px;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+
+        .forecast-detail {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .mini-box {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 10px;
+        }
+
+        .mini-label {
+            font-size: 11px;
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+
+        .mini-value {
+            font-size: 14px;
+            font-weight: 900;
+        }
+
+        .link-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-top: 14px;
+        }
+
+        .link-box {
+            display: block;
+            text-decoration: none;
+            color: #111827;
+            text-align: center;
+            transition: 0.2s;
+        }
+
+        .link-box:hover {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+
+        .link-icon {
+            font-size: 44px;
+            margin-bottom: 12px;
+        }
+
+        .link-title {
+            font-size: 17px;
+            font-weight: 900;
+            margin-bottom: 7px;
+        }
+
+        .link-desc {
+            font-size: 13px;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        .index-card {
+            min-height: 154px;
+        }
+
+        .index-icon {
+            font-size: 38px;
+            margin-bottom: 8px;
+        }
+
+        .index-title {
+            font-size: 17px;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+
+        .index-result {
+            font-size: 22px;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+
+        .index-desc {
+            font-size: 13px;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        .earthquake-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .earthquake-item {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 14px;
+            border: 1px solid #eef2f7;
+        }
+
+        .earthquake-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+
+        .earthquake-title {
+            font-size: 15px;
+            font-weight: 900;
+            line-height: 1.35;
+        }
+
+        .magnitude {
+            flex-shrink: 0;
+            font-size: 15px;
+            font-weight: 900;
+            color: #b91c1c;
+        }
+
+        .earthquake-meta {
+            font-size: 12px;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        .footer {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                max-width: 1080px;
+            }
+
+            .forecast-list,
+            .info-grid,
+            .link-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .layout-3 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 820px) {
+            html,
+            body {
+                height: auto;
+                min-height: 100%;
+                overflow: auto;
+            }
+
+            .container {
+                height: auto;
+                padding: 16px;
+            }
+
+            .app-card {
+                max-height: none;
+                overflow: visible;
+            }
+
+            .layout-2,
+            .layout-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .main-weather {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .info-grid,
+            .info-grid-2,
+            .time-weather-grid,
+            .forecast-list,
+            .forecast-detail,
+            .link-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 540px) {
+            .slide-nav {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .tab-group {
+                width: 100%;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .refresh-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <div class="app-card">
+        <div class="slide-nav">
+            <div class="tab-group">
+                <button class="slide-tab active" onclick="showSlide(0)">날씨</button>
+                <button class="slide-tab" onclick="showSlide(1)">대중교통</button>
+                <button class="slide-tab" onclick="showSlide(2)">생활정보</button>
+                <button class="slide-tab" onclick="showSlide(3)">주변시설</button>
+                <button class="slide-tab" onclick="showSlide(4)">지진정보</button>
+            </div>
+            <button class="refresh-btn" onclick="loadAll()">새로고침</button>
+        </div>
+
+        <div class="slider">
+            <div id="sliderTrack" class="slider-track">
+                <section class="slide">
+                    <div class="page">
+                        <div class="header">
+                            <h1 class="title">날씨 정보</h1>
+                            <div class="subtitle">현재 위치 기준 현재 / 오전 / 오후 / 내일 / 모레 날씨</div>
+                        </div>
+
+                        <div class="location-box">
+                            <div class="location-label">현재 위치</div>
+                            <div id="location" class="location-value">위치 확인 중...</div>
+                        </div>
+
+                        <div class="layout-2">
+                            <section class="box">
+                                <div class="section-label">현재 날씨</div>
+
+                                <div class="main-weather">
+                                    <div id="weatherIcon" class="weather-icon">⛅</div>
+                                    <div>
+                                        <p id="temperature" class="temperature">--°</p>
+                                        <div id="weatherText" class="weather-text">날씨 정보를 불러오는 중</div>
+                                    </div>
+                                </div>
+
+                                <div class="info-grid">
+                                    <div class="info-box">
+                                        <div class="info-label">체감 온도</div>
+                                        <div id="apparentTemp" class="info-value">--°C</div>
+                                    </div>
+
+                                    <div class="info-box">
+                                        <div class="info-label">습도</div>
+                                        <div id="humidity" class="info-value">--%</div>
+                                    </div>
+
+                                    <div class="info-box">
+                                        <div class="info-label">풍속</div>
+                                        <div id="windSpeed" class="info-value">-- km/h</div>
+                                    </div>
+
+                                    <div class="info-box">
+                                        <div class="info-label">업데이트</div>
+                                        <div id="updatedTime" class="info-value">--:--</div>
+                                    </div>
+                                </div>
+
+                                <div class="section-label" style="margin-top: 16px;">오늘 시간대별</div>
+
+                                <div class="time-weather-grid">
+                                    <div class="time-box">
+                                        <div class="time-title">오전 06:00 ~ 11:00</div>
+                                        <div id="morningIcon" class="time-icon">🌤️</div>
+                                        <div id="morningTemp" class="time-temp">--°C</div>
+                                        <div id="morningText" class="time-text">확인 중</div>
+                                    </div>
+
+                                    <div class="time-box">
+                                        <div class="time-title">오후 12:00 ~ 18:00</div>
+                                        <div id="afternoonIcon" class="time-icon">🌤️</div>
+                                        <div id="afternoonTemp" class="time-temp">--°C</div>
+                                        <div id="afternoonText" class="time-text">확인 중</div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section class="box">
+                                <div class="section-label">예보</div>
+
+                                <div class="forecast-list">
+                                    <div class="forecast-box">
+                                        <div class="forecast-top">
+                                            <div>
+                                                <div class="forecast-day">내일</div>
+                                                <div id="tomorrowDate" class="forecast-date">--</div>
+                                            </div>
+                                            <div id="tomorrowIcon" class="forecast-icon">🌤️</div>
+                                        </div>
+
+                                        <div id="tomorrowText" class="forecast-text">예보 확인 중</div>
+
+                                        <div class="forecast-detail">
+                                            <div class="mini-box">
+                                                <div class="mini-label">최저 / 최고</div>
+                                                <div id="tomorrowTemp" class="mini-value">-- / --</div>
+                                            </div>
+
+                                            <div class="mini-box">
+                                                <div class="mini-label">강수 확률</div>
+                                                <div id="tomorrowRain" class="mini-value">--%</div>
+                                            </div>
+
+                                            <div class="mini-box">
+                                                <div class="mini-label">최대 풍속</div>
+                                                <div id="tomorrowWind" class="mini-value">-- km/h</div>
+                                            </div>
+
+                                            <div class="mini-box">
+                                                <div class="mini-label">날짜</div>
+                                                <div id="tomorrowSimpleDate" class="mini-value">--</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="forecast-box">
+                                        <div class="forecast-top">
+                                            <div>
+                                                <div class="forecast-day">모레</div>
+                                                <div id="afterTomorrowDate" class="forecast-date">--</div>
+                                            </div>
+                                            <div id="afterTomorrowIcon" class="forecast-icon">🌤️</div>
+                                        </div>
+
+                                        <div id="afterTomorrowText" class="forecast-text">예보 확인 중</div>
+
+                                        <div class="forecast-detail">
+                                            <div class="mini-box">
+                                                <div class="mini-label">최저 / 최고</div>
+                                                <div id="afterTomorrowTemp" class="mini-value">-- / --</div>
+                                            </div>
+
+                                            <div class="mini-box">
+                                                <div class="mini-label">강수 확률</div>
+                                                <div id="afterTomorrowRain" class="mini-value">--%</div>
+                                            </div>
+
+                                            <div class="mini-box">
+                                                <div class="mini-label">최대 풍속</div>
+                                                <div id="afterTomorrowWind" class="mini-value">-- km/h</div>
+                                            </div>
+
+                                            <div class="mini-box">
+                                                <div class="mini-label">날짜</div>
+                                                <div id="afterTomorrowSimpleDate" class="mini-value">--</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+
+                        <div id="weatherStatus" class="status">
+                            브라우저에서 위치 권한을 허용하면 현재 위치의 날씨를 볼 수 있습니다.
+                        </div>
+
+                        <div class="footer">Weather data by Open-Meteo</div>
+                    </div>
+                </section>
+
+                <section class="slide">
+                    <div class="page">
+                        <div class="header">
+                            <h1 class="title">대중교통 정보</h1>
+                            <div class="subtitle">API 키 없이 현재 위치 기준 지도 검색 링크 제공</div>
+                        </div>
+
+                        <div class="location-box">
+                            <div class="location-label">현재 위치</div>
+                            <div id="transportLocation" class="location-value">위치 확인 중...</div>
+                        </div>
+
+                        <div class="link-grid">
+                            <a id="busStopLink" class="link-box" href="#" target="_blank" rel="noopener noreferrer">
+                                <div class="link-icon">🚌</div>
+                                <div class="link-title">주변 버스정류장</div>
+                                <div class="link-desc">현재 위치 근처 정류장 검색</div>
+                            </a>
+
+                            <a id="subwayLink" class="link-box" href="#" target="_blank" rel="noopener noreferrer">
+                                <div class="link-icon">🚇</div>
+                                <div class="link-title">주변 지하철역</div>
+                                <div class="link-desc">가까운 지하철역 검색</div>
+                            </a>
+
+                            <a id="naverMapLink" class="link-box" href="#" target="_blank" rel="noopener noreferrer">
+                                <div class="link-icon">🗺️</div>
+                                <div class="link-title">네이버지도</div>
+                                <div class="link-desc">현재 위치 주변 지도 열기</div>
+                            </a>
+
+                            <a id="googleTransitLink" class="link-box" href="#" target="_blank" rel="noopener noreferrer">
+                                <div class="link-icon">🚏</div>
+                                <div class="link-title">대중교통 검색</div>
+                                <div class="link-desc">구글맵 대중교통 검색</div>
+                            </a>
+                        </div>
+
+                        <div class="layout-2" style="margin-top: 14px;">
+                            <div class="box">
+                                <div class="section-label">사용 방식</div>
+                                <div class="link-desc">
+                                    로컬 HTML 하나만 사용하는 조건이라 실시간 도착 API 대신 지도 검색 링크 방식으로 구성했습니다.
+                                </div>
+                            </div>
+
+                            <div class="box">
+                                <div class="section-label">확장 가능</div>
+                                <div class="link-desc">
+                                    공공데이터 API 키와 백엔드 프록시를 붙이면 버스/지하철 실시간 도착 정보까지 확장 가능합니다.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="transportStatus" class="status warning">
+                            위치 권한 허용 후 주변 대중교통 링크가 자동 생성됩니다.
+                        </div>
+
+                        <div class="footer">Map links by Naver Map / Google Maps</div>
+                    </div>
+                </section>
+
+                <section class="slide">
+                    <div class="page">
+                        <div class="header">
+                            <h1 class="title">생활 정보</h1>
+                            <div class="subtitle">미세먼지 / 초미세먼지 / 자외선 / 일출·일몰 / 생활지수</div>
+                        </div>
+
+                        <div class="location-box">
+                            <div class="location-label">현재 위치</div>
+                            <div id="lifeLocation" class="location-value">위치 확인 중...</div>
+                        </div>
+
+                        <div class="layout-2">
+                            <section class="box">
+                                <div class="section-label">대기질</div>
+
+                                <div class="info-grid-2">
+                                    <div class="info-box">
+                                        <div class="info-label">미세먼지 PM10</div>
+                                        <div id="pm10" class="info-value">--</div>
+                                    </div>
+
+                                    <div class="info-box">
+                                        <div class="info-label">초미세먼지 PM2.5</div>
+                                        <div id="pm25" class="info-value">--</div>
+                                    </div>
+
+                                    <div class="info-box">
+                                        <div class="info-label">오존 O₃</div>
+                                        <div id="ozone" class="info-value">--</div>
+                                    </div>
+
+                                    <div class="info-box">
+                                        <div class="info-label">자외선 UV</div>
+                                        <div id="uvIndex" class="info-value">--</div>
+                                    </div>
+                                </div>
+
+                                <div class="info-grid-2" style="margin-top: 10px;">
+                                    <div class="info-box">
+                                        <div class="info-label">일출</div>
+                                        <div id="sunrise" class="info-value">--:--</div>
+                                    </div>
+
+                                    <div class="info-box">
+                                        <div class="info-label">일몰</div>
+                                        <div id="sunset" class="info-value">--:--</div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section class="box">
+                                <div class="section-label">생활지수</div>
+
+                                <div class="layout-3">
+                                    <div class="info-box index-card">
+                                        <div class="index-icon">☂️</div>
+                                        <div class="index-title">우산</div>
+                                        <div id="umbrellaIndex" class="index-result">--</div>
+                                        <div id="umbrellaDesc" class="index-desc">확인 중</div>
+                                    </div>
+
+                                    <div class="info-box index-card">
+                                        <div class="index-icon">😷</div>
+                                        <div class="index-title">마스크</div>
+                                        <div id="maskIndex" class="index-result">--</div>
+                                        <div id="maskDesc" class="index-desc">확인 중</div>
+                                    </div>
+
+                                    <div class="info-box index-card">
+                                        <div class="index-icon">🚗</div>
+                                        <div class="index-title">세차</div>
+                                        <div id="carWashIndex" class="index-result">--</div>
+                                        <div id="carWashDesc" class="index-desc">확인 중</div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+
+                        <div id="lifeStatus" class="status">
+                            생활 정보를 불러오는 중입니다.
+                        </div>
+
+                        <div class="footer">Air quality & weather data by Open-Meteo</div>
+                    </div>
+                </section>
+
+                <section class="slide">
+                    <div class="page">
+                        <div class="header">
+                            <h1 class="title">주변 편의시설</h1>
+                            <div class="subtitle">API 키 없이 현재 위치 기준 지도 검색 링크 제공</div>
+                        </div>
+
+                        <div class="location-box">
+                            <div class="location-label">현재 위치</div>
+                            <div id="facilityLocation" class="location-value">위치 확인 중...</div>
+                        </div>
+
+                        <div class="link-grid">
+                            <a id="convenienceLink" class="link-box" href="#" target="_blank" rel="noopener noreferrer">
+                                <div class="link-icon">🏪</div>
+                                <div class="link-title">편의점</div>
+                                <div class="link-desc">근처 편의점 찾기</div>
+                            </a>
+
+                            <a id="pharmacyLink" class="link-box" href="#" target="_blank" rel="noopener noreferrer">
+                                <div class="link-icon">💊</div>
+                                <div class="link-title">약국</div>
+                                <div class="link-desc">근처 약국 찾기</div>
+                            </a>
+
+                            <a id="hospitalLink" class="link-box" href="#" target="_blank" rel="noopener noreferrer">
+                                <div class="link-icon">🏥</div>
+                                <div class="link-title">병원</div>
+                                <div class="link-desc">근처 병원 찾기</div>
+                            </a>
+
+                            <a id="gasStationLink" class="link-box" href="#" target="_blank" rel="noopener noreferrer">
+                                <div class="link-icon">⛽</div>
+                                <div class="link-title">주유소</div>
+                                <div class="link-desc">근처 주유소 찾기</div>
+                            </a>
+
+                            <a id="cafeLink" class="link-box" href="#" target="_blank" rel="noopener noreferrer">
+                                <div class="link-icon">☕</div>
+                                <div class="link-title">카페</div>
+                                <div class="link-desc">근처 카페 찾기</div>
+                            </a>
+
+                            <a id="atmLink" class="link-box" href="#" target="_blank" rel="noopener noreferrer">
+                                <div class="link-icon">🏧</div>
+                                <div class="link-title">ATM</div>
+                                <div class="link-desc">근처 ATM 찾기</div>
+                            </a>
+
+                            <a id="toiletLink" class="link-box" href="#" target="_blank" rel="noopener noreferrer">
+                                <div class="link-icon">🚻</div>
+                                <div class="link-title">화장실</div>
+                                <div class="link-desc">근처 화장실 찾기</div>
+                            </a>
+
+                            <a id="parkingLink" class="link-box" href="#" target="_blank" rel="noopener noreferrer">
+                                <div class="link-icon">🅿️</div>
+                                <div class="link-title">주차장</div>
+                                <div class="link-desc">근처 주차장 찾기</div>
+                            </a>
+                        </div>
+
+                        <div id="facilityStatus" class="status warning">
+                            위치 권한 허용 후 주변 시설 링크가 자동 생성됩니다.
+                        </div>
+
+                        <div class="footer">Facility links by Naver Map</div>
+                    </div>
+                </section>
+
+                <section class="slide">
+                    <div class="page">
+                        <div class="header">
+                            <h1 class="title">최근 지진 정보</h1>
+                            <div class="subtitle">최근 24시간 규모 4.5 이상 주요 지진 정보</div>
+                        </div>
+
+                        <div class="layout-2">
+                            <section class="box">
+                                <div class="section-label">주요 지진</div>
+                                <div id="earthquakeList" class="earthquake-list">
+                                    <div class="earthquake-item">
+                                        <div class="earthquake-title">지진 정보를 불러오는 중입니다.</div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section class="box">
+                                <div class="section-label">안내</div>
+
+                                <div class="info-grid-2">
+                                    <div class="info-box">
+                                        <div class="info-label">기준</div>
+                                        <div class="info-value">M 4.5+</div>
+                                    </div>
+
+                                    <div class="info-box">
+                                        <div class="info-label">범위</div>
+                                        <div class="info-value">최근 24시간</div>
+                                    </div>
+
+                                    <div class="info-box">
+                                        <div class="info-label">출처</div>
+                                        <div class="info-value">USGS</div>
+                                    </div>
+
+                                    <div class="info-box">
+                                        <div class="info-label">갱신</div>
+                                        <div id="earthquakeUpdated" class="info-value">--:--</div>
+                                    </div>
+                                </div>
+
+                                <div class="status warning">
+                                    전세계 주요 지진 기준입니다. 국내 재난문자나 기상청 공식 발표와 함께 확인하는 게 안전합니다.
+                                </div>
+                            </section>
+                        </div>
+
+                        <div id="earthquakeStatus" class="status">
+                            지진 정보를 불러오는 중입니다.
+                        </div>
+
+                        <div class="footer">Earthquake data by USGS</div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const weatherMap = {
+        0: ["☀️", "맑음"],
+        1: ["🌤️", "대체로 맑음"],
+        2: ["⛅", "부분적으로 흐림"],
+        3: ["☁️", "흐림"],
+        45: ["🌫️", "안개"],
+        48: ["🌫️", "서리 안개"],
+        51: ["🌦️", "약한 이슬비"],
+        53: ["🌦️", "이슬비"],
+        55: ["🌧️", "강한 이슬비"],
+        56: ["🌧️", "약한 어는 이슬비"],
+        57: ["🌧️", "강한 어는 이슬비"],
+        61: ["🌧️", "약한 비"],
+        63: ["🌧️", "비"],
+        65: ["🌧️", "강한 비"],
+        66: ["🌧️", "약한 어는 비"],
+        67: ["🌧️", "강한 어는 비"],
+        71: ["🌨️", "약한 눈"],
+        73: ["🌨️", "눈"],
+        75: ["❄️", "강한 눈"],
+        77: ["❄️", "싸락눈"],
+        80: ["🌦️", "약한 소나기"],
+        81: ["🌧️", "소나기"],
+        82: ["⛈️", "강한 소나기"],
+        85: ["🌨️", "약한 눈 소나기"],
+        86: ["🌨️", "강한 눈 소나기"],
+        95: ["⛈️", "천둥번개"],
+        96: ["⛈️", "우박 동반 천둥번개"],
+        99: ["⛈️", "강한 우박 동반 천둥번개"]
+    };
+
+    function showSlide(index) {
+        const sliderTrack = document.getElementById("sliderTrack");
+        const tabs = document.querySelectorAll(".slide-tab");
+
+        sliderTrack.style.transform = `translateX(-${index * 20}%)`;
+
+        tabs.forEach((tab, tabIndex) => {
+            tab.classList.toggle("active", tabIndex === index);
+        });
+    }
+
+    function setStatus(targetId, message, type = "normal") {
+        const status = document.getElementById(targetId);
+        status.textContent = message;
+
+        if (type === "error") {
+            status.className = "status error";
+        } else if (type === "warning") {
+            status.className = "status warning";
+        } else {
+            status.className = "status";
+        }
+    }
+
+    function getWeatherInfo(code) {
+        return weatherMap[code] || ["🌈", "알 수 없음"];
+    }
+
+    function formatTime(dateText) {
+        const date = new Date(dateText);
+
+        return date.toLocaleTimeString("ko-KR", {
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+    }
+
+    function formatDate(dateText) {
+        const date = new Date(dateText);
+
+        return date.toLocaleDateString("ko-KR", {
+            month: "long",
+            day: "numeric",
+            weekday: "long"
+        });
+    }
+
+    function formatSimpleDate(dateText) {
+        const date = new Date(dateText);
+
+        return date.toLocaleDateString("ko-KR", {
+            month: "2-digit",
+            day: "2-digit"
+        });
+    }
+
+    function getTodayText() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        const day = String(now.getDate()).padStart(2, "0");
+
+        return `${year}-${month}-${day}`;
+    }
+
+    async function fetchWeather(latitude, longitude) {
+        const url =
+            "https://api.open-meteo.com/v1/forecast" +
+            `?latitude=${latitude}` +
+            `&longitude=${longitude}` +
+            "&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m" +
+            "&hourly=temperature_2m,weather_code" +
+            "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,sunrise,sunset,uv_index_max" +
+            "&forecast_days=3" +
+            "&timezone=auto";
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error("날씨 정보를 가져오지 못했습니다.");
+        }
+
+        return response.json();
+    }
+
+    async function fetchAirQuality(latitude, longitude) {
+        const url =
+            "https://air-quality-api.open-meteo.com/v1/air-quality" +
+            `?latitude=${latitude}` +
+            `&longitude=${longitude}` +
+            "&hourly=pm10,pm2_5,ozone,uv_index" +
+            "&forecast_days=1" +
+            "&timezone=auto";
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error("대기질 정보를 가져오지 못했습니다.");
+        }
+
+        return response.json();
+    }
+
+    async function fetchEarthquakes() {
+        const url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_day.geojson";
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error("지진 정보를 가져오지 못했습니다.");
+        }
+
+        return response.json();
+    }
+
+    async function reverseGeocode(latitude, longitude) {
+        try {
+            const url =
+                "https://geocoding-api.open-meteo.com/v1/reverse" +
+                `?latitude=${latitude}` +
+                `&longitude=${longitude}` +
+                "&language=ko&format=json";
+
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data.results && data.results.length > 0) {
+                const place = data.results[0];
+
+                return [
+                    place.country,
+                    place.admin1,
+                    place.admin2,
+                    place.name
+                ]
+                    .filter(Boolean)
+                    .join(" ");
+            }
+
+            return `위도 ${latitude.toFixed(2)}, 경도 ${longitude.toFixed(2)}`;
+        } catch {
+            return `위도 ${latitude.toFixed(2)}, 경도 ${longitude.toFixed(2)}`;
+        }
+    }
+
+    function renderCurrentWeather(current) {
+        const [icon, text] = getWeatherInfo(current.weather_code);
+
+        document.getElementById("weatherIcon").textContent = icon;
+        document.getElementById("temperature").textContent =
+            Math.round(current.temperature_2m) + "°";
+
+        document.getElementById("weatherText").textContent = text;
+
+        document.getElementById("apparentTemp").textContent =
+            Math.round(current.apparent_temperature) + "°C";
+
+        document.getElementById("humidity").textContent =
+            current.relative_humidity_2m + "%";
+
+        document.getElementById("windSpeed").textContent =
+            current.wind_speed_10m + " km/h";
+
+        document.getElementById("updatedTime").textContent =
+            formatTime(current.time);
+    }
+
+    function getHourlySummary(hourly, startHour, endHour) {
+        const today = getTodayText();
+
+        const targetItems = hourly.time
+            .map((time, index) => ({
+                time,
+                temperature: hourly.temperature_2m[index],
+                weatherCode: hourly.weather_code[index]
+            }))
+            .filter(item => {
+                const date = item.time.slice(0, 10);
+                const hour = Number(item.time.slice(11, 13));
+
+                return date === today && hour >= startHour && hour <= endHour;
+            });
+
+        if (targetItems.length === 0) {
+            return {
+                temperature: null,
+                weatherCode: null
+            };
+        }
+
+        const avgTemperature =
+            targetItems.reduce((sum, item) => sum + item.temperature, 0) / targetItems.length;
+
+        const weatherCodeCount = {};
+
+        targetItems.forEach(item => {
+            weatherCodeCount[item.weatherCode] =
+                (weatherCodeCount[item.weatherCode] || 0) + 1;
+        });
+
+        const mainWeatherCode = Number(
+            Object.entries(weatherCodeCount)
+                .sort((a, b) => b[1] - a[1])[0][0]
+        );
+
+        return {
+            temperature: Math.round(avgTemperature),
+            weatherCode: mainWeatherCode
+        };
+    }
+
+    function renderTodayTimeWeather(hourly) {
+        renderTimeBox("morning", getHourlySummary(hourly, 6, 11));
+        renderTimeBox("afternoon", getHourlySummary(hourly, 12, 18));
+    }
+
+    function renderTimeBox(prefix, data) {
+        if (data.temperature === null || data.weatherCode === null) {
+            document.getElementById(prefix + "Icon").textContent = "🌈";
+            document.getElementById(prefix + "Temp").textContent = "--°C";
+            document.getElementById(prefix + "Text").textContent = "정보 없음";
+            return;
+        }
+
+        const [icon, text] = getWeatherInfo(data.weatherCode);
+
+        document.getElementById(prefix + "Icon").textContent = icon;
+        document.getElementById(prefix + "Temp").textContent = data.temperature + "°C";
+        document.getElementById(prefix + "Text").textContent = text;
+    }
+
+    function renderDailyForecast(daily, index, prefix) {
+        const [icon, text] = getWeatherInfo(daily.weather_code[index]);
+
+        const minTemp = Math.round(daily.temperature_2m_min[index]);
+        const maxTemp = Math.round(daily.temperature_2m_max[index]);
+
+        document.getElementById(prefix + "Icon").textContent = icon;
+        document.getElementById(prefix + "Text").textContent = text;
+        document.getElementById(prefix + "Date").textContent = formatDate(daily.time[index]);
+        document.getElementById(prefix + "SimpleDate").textContent = formatSimpleDate(daily.time[index]);
+
+        document.getElementById(prefix + "Temp").textContent =
+            `${minTemp}°C / ${maxTemp}°C`;
+
+        document.getElementById(prefix + "Rain").textContent =
+            daily.precipitation_probability_max[index] + "%";
+
+        document.getElementById(prefix + "Wind").textContent =
+            daily.wind_speed_10m_max[index] + " km/h";
+    }
+
+    function findNearestHourly(hourly) {
+        const now = new Date();
+        let nearestIndex = 0;
+        let nearestDiff = Infinity;
+
+        hourly.time.forEach((time, index) => {
+            const diff = Math.abs(new Date(time).getTime() - now.getTime());
+
+            if (diff < nearestDiff) {
+                nearestDiff = diff;
+                nearestIndex = index;
+            }
+        });
+
+        return nearestIndex;
+    }
+
+    function getPm25Level(value) {
+        if (value <= 15) return ["좋음", "공기가 꽤 괜찮습니다."];
+        if (value <= 35) return ["보통", "민감하면 장시간 외출은 조절하세요."];
+        if (value <= 75) return ["나쁨", "마스크 착용을 추천합니다."];
+        return ["매우 나쁨", "외출을 줄이는 게 좋습니다."];
+    }
+
+    function getPm10Level(value) {
+        if (value <= 30) return ["좋음", "미세먼지 상태가 좋습니다."];
+        if (value <= 80) return ["보통", "일상 활동은 무난합니다."];
+        if (value <= 150) return ["나쁨", "야외 활동은 조절하세요."];
+        return ["매우 나쁨", "외출을 줄이는 게 좋습니다."];
+    }
+
+    function renderLifeInfo(weatherData, airQualityData) {
+        const index = findNearestHourly(airQualityData.hourly);
+        const hourly = airQualityData.hourly;
+        const daily = weatherData.daily;
+
+        const pm10 = Math.round(hourly.pm10[index]);
+        const pm25 = Math.round(hourly.pm2_5[index]);
+        const ozone = Math.round(hourly.ozone[index]);
+        const uv = Math.round((hourly.uv_index[index] || daily.uv_index_max[0] || 0) * 10) / 10;
+
+        const [pm10Level] = getPm10Level(pm10);
+        const [pm25Level, pm25Desc] = getPm25Level(pm25);
+
+        document.getElementById("pm10").textContent = `${pm10}㎍/㎥ · ${pm10Level}`;
+        document.getElementById("pm25").textContent = `${pm25}㎍/㎥ · ${pm25Level}`;
+        document.getElementById("ozone").textContent = `${ozone}㎍/㎥`;
+        document.getElementById("uvIndex").textContent = `${uv}`;
+
+        document.getElementById("sunrise").textContent = formatTime(daily.sunrise[0]);
+        document.getElementById("sunset").textContent = formatTime(daily.sunset[0]);
+
+        const todayRain = daily.precipitation_probability_max[0] || 0;
+        const tomorrowRain = daily.precipitation_probability_max[1] || 0;
+        const weatherCode = weatherData.current.weather_code;
+
+        const rainyCodes = [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82, 95, 96, 99];
+        const isRainyNow = rainyCodes.includes(weatherCode);
+
+        if (todayRain >= 60 || isRainyNow) {
+            document.getElementById("umbrellaIndex").textContent = "필수";
+            document.getElementById("umbrellaDesc").textContent = "비 가능성이 높습니다. 작은 우산이라도 챙기는 게 좋습니다.";
+        } else if (todayRain >= 30) {
+            document.getElementById("umbrellaIndex").textContent = "권장";
+            document.getElementById("umbrellaDesc").textContent = "비 가능성이 있습니다. 외출 시간이 길면 챙기세요.";
+        } else {
+            document.getElementById("umbrellaIndex").textContent = "불필요";
+            document.getElementById("umbrellaDesc").textContent = "강수 가능성이 낮습니다.";
+        }
+
+        if (pm25 > 35 || pm10 > 80) {
+            document.getElementById("maskIndex").textContent = "권장";
+            document.getElementById("maskDesc").textContent = pm25Desc;
+        } else {
+            document.getElementById("maskIndex").textContent = "무난";
+            document.getElementById("maskDesc").textContent = "대기질이 크게 나쁘지 않습니다.";
+        }
+
+        if (todayRain >= 40 || tomorrowRain >= 40) {
+            document.getElementById("carWashIndex").textContent = "비추천";
+            document.getElementById("carWashDesc").textContent = "오늘이나 내일 비 가능성이 있어 세차 효율이 낮습니다.";
+        } else {
+            document.getElementById("carWashIndex").textContent = "가능";
+            document.getElementById("carWashDesc").textContent = "강수 가능성이 낮아 세차하기 무난합니다.";
+        }
+
+        setStatus("lifeStatus", "생활 정보가 정상적으로 업데이트되었습니다.");
+    }
+
+    function createNaverSearchUrl(keyword, latitude, longitude) {
+        const encodedKeyword = encodeURIComponent(keyword);
+        return `https://map.naver.com/p/search/${encodedKeyword}?c=${longitude},${latitude},15,0,0,0,dh`;
+    }
+
+    function updateMapLinks(latitude, longitude, locationName) {
+        document.getElementById("transportLocation").textContent = locationName;
+        document.getElementById("facilityLocation").textContent = locationName;
+
+        document.getElementById("busStopLink").href = createNaverSearchUrl("버스정류장", latitude, longitude);
+        document.getElementById("subwayLink").href = createNaverSearchUrl("지하철역", latitude, longitude);
+        document.getElementById("naverMapLink").href = `https://map.naver.com/p?c=${longitude},${latitude},15,0,0,0,dh`;
+        document.getElementById("googleTransitLink").href =
+            `https://www.google.com/maps/search/${encodeURIComponent("대중교통")}/@${latitude},${longitude},15z`;
+
+        document.getElementById("convenienceLink").href = createNaverSearchUrl("편의점", latitude, longitude);
+        document.getElementById("pharmacyLink").href = createNaverSearchUrl("약국", latitude, longitude);
+        document.getElementById("hospitalLink").href = createNaverSearchUrl("병원", latitude, longitude);
+        document.getElementById("gasStationLink").href = createNaverSearchUrl("주유소", latitude, longitude);
+        document.getElementById("cafeLink").href = createNaverSearchUrl("카페", latitude, longitude);
+        document.getElementById("atmLink").href = createNaverSearchUrl("ATM", latitude, longitude);
+        document.getElementById("toiletLink").href = createNaverSearchUrl("화장실", latitude, longitude);
+        document.getElementById("parkingLink").href = createNaverSearchUrl("주차장", latitude, longitude);
+
+        setStatus("transportStatus", "대중교통 링크가 현재 위치 기준으로 생성되었습니다.");
+        setStatus("facilityStatus", "주변 시설 링크가 현재 위치 기준으로 생성되었습니다.");
+    }
+
+    function renderEarthquakes(data) {
+        const list = document.getElementById("earthquakeList");
+        const features = data.features || [];
+
+        document.getElementById("earthquakeUpdated").textContent =
+            new Date().toLocaleTimeString("ko-KR", {
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+
+        if (features.length === 0) {
+            list.innerHTML = `
+                <div class="earthquake-item">
+                    <div class="earthquake-title">최근 24시간 규모 4.5 이상 지진 정보가 없습니다.</div>
+                    <div class="earthquake-meta">현재 기준으로 주요 지진 데이터가 없습니다.</div>
+                </div>
+            `;
+
+            setStatus("earthquakeStatus", "최근 24시간 규모 4.5 이상 지진 정보가 없습니다.");
+            return;
+        }
+
+        const sorted = features
+            .slice()
+            .sort((a, b) => b.properties.mag - a.properties.mag)
+            .slice(0, 5);
+
+        list.innerHTML = sorted.map(feature => {
+            const props = feature.properties;
+            const time = new Date(props.time).toLocaleString("ko-KR", {
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+
+            return `
+                <div class="earthquake-item">
+                    <div class="earthquake-top">
+                        <div class="earthquake-title">${props.place || "위치 정보 없음"}</div>
+                        <div class="magnitude">M ${props.mag}</div>
+                    </div>
+                    <div class="earthquake-meta">
+                        발생 시각: ${time}<br>
+                        깊이: ${feature.geometry.coordinates[2]} km
+                    </div>
+                </div>
+            `;
+        }).join("");
+
+        setStatus("earthquakeStatus", "지진 정보가 정상적으로 업데이트되었습니다.");
+    }
+
+    async function loadEarthquakesOnly() {
+        try {
+            const earthquakeData = await fetchEarthquakes();
+            renderEarthquakes(earthquakeData);
+        } catch (error) {
+            setStatus("earthquakeStatus", error.message || "지진 정보를 가져오지 못했습니다.", "error");
+        }
+    }
+
+    async function renderAll(position) {
+        try {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            setStatus("weatherStatus", "현재 위치 기준으로 날씨 정보를 불러오고 있습니다.");
+            setStatus("transportStatus", "현재 위치 기준으로 대중교통 링크를 생성하고 있습니다.", "warning");
+            setStatus("facilityStatus", "현재 위치 기준으로 주변 시설 링크를 생성하고 있습니다.", "warning");
+            setStatus("lifeStatus", "생활 정보를 불러오고 있습니다.");
+
+            const [weatherData, airQualityData, locationName] = await Promise.all([
+                fetchWeather(latitude, longitude),
+                fetchAirQuality(latitude, longitude),
+                reverseGeocode(latitude, longitude)
+            ]);
+
+            document.getElementById("location").textContent = locationName;
+            document.getElementById("lifeLocation").textContent = locationName;
+
+            renderCurrentWeather(weatherData.current);
+            renderTodayTimeWeather(weatherData.hourly);
+            renderDailyForecast(weatherData.daily, 1, "tomorrow");
+            renderDailyForecast(weatherData.daily, 2, "afterTomorrow");
+            renderLifeInfo(weatherData, airQualityData);
+            updateMapLinks(latitude, longitude, locationName);
+
+            setStatus("weatherStatus", "날씨 정보가 정상적으로 업데이트되었습니다.");
+        } catch (error) {
+            setStatus("weatherStatus", error.message || "오류가 발생했습니다.", "error");
+            setStatus("lifeStatus", "생활 정보를 가져오지 못했습니다.", "error");
+            setStatus("transportStatus", "위치 또는 네트워크 정보를 확인하지 못했습니다.", "error");
+            setStatus("facilityStatus", "위치 또는 네트워크 정보를 확인하지 못했습니다.", "error");
+        }
+    }
+
+    function handleLocationError(error) {
+        let message = "위치 정보를 가져올 수 없습니다.";
+
+        if (error.code === error.PERMISSION_DENIED) {
+            message = "위치 권한이 거부되었습니다. 브라우저 설정에서 위치 권한을 허용해주세요.";
+        } else if (error.code === error.POSITION_UNAVAILABLE) {
+            message = "현재 위치 정보를 사용할 수 없습니다.";
+        } else if (error.code === error.TIMEOUT) {
+            message = "위치 정보를 가져오는 시간이 초과되었습니다.";
+        }
+
+        setStatus("weatherStatus", message, "error");
+        setStatus("transportStatus", message, "error");
+        setStatus("lifeStatus", message, "error");
+        setStatus("facilityStatus", message, "error");
+
+        document.getElementById("weatherText").textContent = "위치 권한 필요";
+        document.getElementById("location").textContent = "브라우저 위치 권한을 확인해주세요.";
+        document.getElementById("transportLocation").textContent = "브라우저 위치 권한을 확인해주세요.";
+        document.getElementById("lifeLocation").textContent = "브라우저 위치 권한을 확인해주세요.";
+        document.getElementById("facilityLocation").textContent = "브라우저 위치 권한을 확인해주세요.";
+    }
+
+    function loadLocationBasedInfo() {
+        if (!navigator.geolocation) {
+            const message = "이 브라우저는 위치 정보를 지원하지 않습니다.";
+
+            setStatus("weatherStatus", message, "error");
+            setStatus("transportStatus", message, "error");
+            setStatus("lifeStatus", message, "error");
+            setStatus("facilityStatus", message, "error");
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            renderAll,
+            handleLocationError,
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 1000 * 60 * 5
+            }
+        );
+    }
+
+    function loadAll() {
+        loadLocationBasedInfo();
+        loadEarthquakesOnly();
+    }
+
+    loadAll();
+</script>
+</body>
+</html>
