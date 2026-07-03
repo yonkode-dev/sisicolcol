@@ -1580,7 +1580,7 @@
         const url = `https://api.open-meteo.com/v1/forecast?${params.toString()}`;
 
         try {
-            return await fetchWithTimeout(url, 8000);
+            return await fetchWithTimeout(url, 20000);
         } catch (error) {
             console.error("날씨 API 호출 실패:", error);
             throw new Error("날씨 정보를 가져오지 못했습니다. 네트워크 또는 API 응답을 확인해주세요.");
