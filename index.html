@@ -31,6 +31,10 @@
             font: inherit;
         }
 
+        input[type="file"] {
+            font-size: 13px;
+        }
+
         .shell {
             width: min(430px, 100%);
             min-height: 100dvh;
@@ -58,8 +62,8 @@
 
         .top-actions {
             position: fixed;
-            top: max(14px, env(safe-area-inset-top));
-            right: 14px;
+            top: max(26px, calc(env(safe-area-inset-top) + 14px));
+            right: max(24px, calc(env(safe-area-inset-right) + 14px));
             z-index: 20;
         }
 
@@ -68,7 +72,8 @@
             justify-content: flex-start;
             align-items: center;
             gap: 14px;
-            padding-right: 48px;
+            min-height: 46px;
+            padding-right: 66px;
         }
 
         .eyebrow {
@@ -104,6 +109,7 @@
         .settings-toggle,
         .close-btn,
         .save-btn,
+        .backup-btn,
         .feature-button {
             border: 0;
             border-radius: 8px;
@@ -114,7 +120,8 @@
 
         .primary-btn,
         .settings-toggle,
-        .save-btn {
+        .save-btn,
+        .backup-btn {
             background: #2563eb;
             color: #ffffff;
             box-shadow: 0 10px 24px rgba(37, 99, 235, 0.24);
@@ -163,6 +170,7 @@
         .settings-toggle:hover,
         .close-btn:hover,
         .save-btn:hover,
+        .backup-btn:hover,
         .feature-button:hover {
             transform: translateY(-2px);
         }
@@ -198,6 +206,7 @@
         .settings-toggle:focus-visible,
         .close-btn:focus-visible,
         .save-btn:focus-visible,
+        .backup-btn:focus-visible,
         input:focus-visible {
             outline: 3px solid rgba(37, 99, 235, 0.28);
             outline-offset: 2px;
@@ -340,6 +349,41 @@
             padding: 12px 16px;
         }
 
+        .backup-box {
+            display: grid;
+            gap: 10px;
+            padding: 12px;
+            border: 1px solid #dbe5f1;
+            border-radius: 8px;
+            background: #f8fbff;
+        }
+
+        .backup-title {
+            color: #34445a;
+            font-size: 13px;
+            font-weight: 900;
+        }
+
+        .backup-desc {
+            margin: 0;
+            color: #5f7085;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .backup-btn {
+            min-height: 42px;
+            border: 0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 900;
+        }
+
+        .restore-row {
+            display: grid;
+            gap: 8px;
+        }
+
         .save-status {
             min-height: 20px;
             color: #0f7a4f;
@@ -401,7 +445,7 @@
 
             .brand-row {
                 align-items: center;
-                padding-right: 48px;
+                padding-right: 66px;
             }
 
             .feature-grid {
@@ -527,6 +571,16 @@
                 </div>
             </form>
 
+            <div class="backup-box">
+                <div class="backup-title">LocalStorage 백업</div>
+                <p class="backup-desc">설정, 캘린더 메모, 메모장 저장 내역을 JSON 파일로 다운로드하거나 복원합니다.</p>
+                <button id="downloadBackupButton" class="backup-btn" type="button">백업 다운로드</button>
+                <div class="restore-row">
+                    <input id="backupFileInput" type="file" accept="application/json,.json" />
+                    <button id="restoreBackupButton" class="backup-btn" type="button">백업 업로드</button>
+                </div>
+            </div>
+
             <div class="footer-link">저장 위치: 현재 브라우저 localStorage</div>
         </aside>
         </div>
@@ -539,6 +593,9 @@
         const settingsLayer = document.getElementById("settingsLayer");
         const settingsOpenButton = document.getElementById("settingsOpenButton");
         const settingsCloseButton = document.getElementById("settingsCloseButton");
+        const downloadBackupButton = document.getElementById("downloadBackupButton");
+        const backupFileInput = document.getElementById("backupFileInput");
+        const restoreBackupButton = document.getElementById("restoreBackupButton");
 
         function loadSettings() {
             try {
@@ -566,10 +623,7 @@
 
             localStorage.setItem(storageKey, JSON.stringify(data));
             form.elements.apiKeys.value = data.apiKeys;
-            saveStatus.textContent = "저장되었습니다.";
-            window.setTimeout(() => {
-                saveStatus.textContent = "";
-            }, 1800);
+            showSettingsStatus("저장되었습니다.");
         }
 
         function openSettings() {
@@ -592,6 +646,90 @@
             window.location.href = url;
         }
 
+        function downloadLocalStorageBackup() {
+            const backup = {
+                app: "sisicolcol",
+                exportedAt: new Date().toISOString(),
+                items: {}
+            };
+
+            for (let index = 0; index < localStorage.length; index += 1) {
+                const key = localStorage.key(index);
+
+                if (key && key.startsWith("sisicolcol.")) {
+                    try {
+                        backup.items[key] = JSON.parse(localStorage.getItem(key));
+                    } catch (error) {
+                        backup.items[key] = localStorage.getItem(key);
+                    }
+                }
+            }
+
+            const blob = new Blob([JSON.stringify(backup, null, 2)], {
+                type: "application/json"
+            });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            const dateText = new Date().toISOString().slice(0, 10);
+
+            link.href = url;
+            link.download = `sisicolcol-backup-${dateText}.json`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            URL.revokeObjectURL(url);
+
+            showSettingsStatus("백업 파일을 다운로드했습니다.");
+        }
+
+        function showSettingsStatus(message) {
+            saveStatus.textContent = message;
+            window.setTimeout(() => {
+                saveStatus.textContent = "";
+            }, 1800);
+        }
+
+        function restoreLocalStorageBackup() {
+            const file = backupFileInput.files && backupFileInput.files[0];
+
+            if (!file) {
+                showSettingsStatus("백업 파일을 선택해주세요.");
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.addEventListener("load", () => {
+                try {
+                    const backup = JSON.parse(String(reader.result || "{}"));
+                    const items = backup.items;
+
+                    if (!items || typeof items !== "object" || Array.isArray(items)) {
+                        throw new Error("invalid backup");
+                    }
+
+                    let restoredCount = 0;
+
+                    Object.entries(items).forEach(([key, value]) => {
+                        if (!key.startsWith("sisicolcol.")) {
+                            return;
+                        }
+
+                        localStorage.setItem(key, JSON.stringify(value));
+                        restoredCount += 1;
+                    });
+
+                    loadSettings();
+                    backupFileInput.value = "";
+                    showSettingsStatus(`${restoredCount}개 항목을 복원했습니다.`);
+                } catch (error) {
+                    showSettingsStatus("백업 파일을 확인해주세요.");
+                }
+            });
+
+            reader.readAsText(file);
+        }
+
         document.querySelectorAll("[data-link]").forEach((button) => {
             button.addEventListener("click", () => {
                 openPage(button.dataset.link);
@@ -605,6 +743,8 @@
 
         settingsOpenButton.addEventListener("click", openSettings);
         settingsCloseButton.addEventListener("click", closeSettings);
+        downloadBackupButton.addEventListener("click", downloadLocalStorageBackup);
+        restoreBackupButton.addEventListener("click", restoreLocalStorageBackup);
         settingsLayer.addEventListener("click", (event) => {
             if (event.target === settingsLayer) {
                 closeSettings();
