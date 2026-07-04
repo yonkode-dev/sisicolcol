@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8" />
-    <title>시시콜콜 서비스</title>
+    <title>SiSiColCol</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <style>
         * {
@@ -239,6 +239,7 @@
             z-index: 30;
             display: flex;
             justify-content: flex-end;
+            align-items: flex-start;
             background: rgba(22, 32, 51, 0.32);
             opacity: 1;
             overflow-y: auto;
@@ -253,6 +254,7 @@
         .settings {
             width: min(420px, calc(100% - 22px));
             min-height: 100svh;
+            height: auto;
             padding: max(20px, env(safe-area-inset-top)) 20px max(20px, env(safe-area-inset-bottom));
             display: flex;
             flex-direction: column;
@@ -441,7 +443,9 @@
             }
 
             .settings {
-                width: min(100%, calc(100% - 12px));
+                width: 100%;
+                min-height: 100svh;
+                height: auto;
                 padding: 18px;
             }
 
@@ -515,26 +519,26 @@
         <section class="intro" aria-labelledby="appTitle">
             <div class="brand-row">
                 <div>
-                    <h1 id="appTitle">시시콜콜 서비스</h1>
+                    <h1 id="appTitle">SiSiColCol</h1>
                 </div>
             </div>
 
             <div class="feature-grid" aria-label="연결 선택">
-                <button class="feature-button" type="button" data-link="app.html">
+                <button class="feature-button" type="button" data-link="life.html">
                     <span class="feature-icon" aria-hidden="true">🌿</span>
-                    <span><span class="feature-title">All 라이프</span><span class="feature-meta">생활 정보 대시보드</span></span>
+                    <span><span class="feature-title">SiSiColCol 라이프</span><span class="feature-meta">생활 정보 대시보드</span></span>
                 </button>
                 <button class="feature-button" type="button" data-link="calculator.html">
                     <span class="feature-icon" aria-hidden="true">🧮</span>
-                    <span><span class="feature-title">All 계산기</span><span class="feature-meta">계산기 화면</span></span>
+                    <span><span class="feature-title">SiSiColCol 계산기</span><span class="feature-meta">계산기 화면</span></span>
                 </button>
                 <button class="feature-button" type="button" data-link="calendar.html">
                     <span class="feature-icon" aria-hidden="true">📅</span>
-                    <span><span class="feature-title">All 캘린더</span><span class="feature-meta">일정 관리 화면</span></span>
+                    <span><span class="feature-title">SiSiColCol 캘린더</span><span class="feature-meta">일정 관리 화면</span></span>
                 </button>
                 <button class="feature-button" type="button" data-link="memo.html">
                     <span class="feature-icon" aria-hidden="true">📝</span>
-                    <span><span class="feature-title">All 메모장</span><span class="feature-meta">메모 작성 화면</span></span>
+                    <span><span class="feature-title">SiSiColCol 메모장</span><span class="feature-meta">메모 작성 화면</span></span>
                 </button>
                 <button class="feature-button" type="button" disabled>
                     <span class="feature-icon" aria-hidden="true">＋</span>

@@ -129,10 +129,17 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            min-height: 38px;
-            background: #edf3fb;
-            color: #26364d;
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(214, 224, 238, 0.95);
+            color: #2563eb;
+            font-size: 25px;
+            line-height: 1;
             text-decoration: none;
+            box-shadow: 0 10px 22px rgba(22, 32, 51, 0.16);
         }
 
         .slide-tab {
@@ -327,11 +334,28 @@
             color: #111827;
         }
 
-        .time-weather-grid,
-        .forecast-list {
+        .time-weather-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
+        }
+
+        .forecast-list {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            padding-bottom: 2px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .forecast-list::-webkit-scrollbar {
+            display: none;
+        }
+
+        .forecast-list {
+            scrollbar-width: none;
         }
 
         .time-weather-grid {
@@ -344,6 +368,11 @@
             border-radius: 8px;
             padding: 13px;
             border: 1px solid #dbe5f1;
+        }
+
+        .forecast-box {
+            flex: 0 0 100%;
+            scroll-snap-align: start;
         }
 
         .time-box {
@@ -546,7 +575,6 @@
                 padding: 30px;
             }
 
-            .forecast-list,
             .info-grid,
             .link-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -588,7 +616,6 @@
             .info-grid,
             .info-grid-2,
             .time-weather-grid,
-            .forecast-list,
             .forecast-detail,
             .link-grid {
                 grid-template-columns: 1fr;
@@ -657,7 +684,7 @@
 
             .nav-actions {
                 display: grid;
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns: 44px 1fr;
                 width: 100%;
             }
 
@@ -672,6 +699,15 @@
                 padding: 8px 10px;
                 font-size: 12px;
                 border-radius: 8px;
+            }
+
+            .back-link {
+                width: 40px;
+                height: 40px;
+                padding: 0;
+                border-radius: 999px;
+                font-size: 25px;
+                justify-self: start;
             }
 
             .slider {
@@ -822,7 +858,6 @@
             }
 
             .forecast-list {
-                grid-template-columns: repeat(2, 1fr);
                 gap: 6px;
             }
 
@@ -983,7 +1018,7 @@
                 <button class="slide-tab" onclick="showSlide(4)">지진</button>
             </div>
             <div class="nav-actions">
-                <a class="back-link" href="index.html">처음으로</a>
+                <a class="back-link" href="index.html" aria-label="처음으로">‹</a>
                 <button class="refresh-btn" onclick="loadAll()">새로고침</button>
             </div>
         </div>

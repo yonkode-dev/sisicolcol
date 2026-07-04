@@ -5,7 +5,7 @@
 ## 주요 화면
 
 - `index.html`: 서비스 시작 화면
-- `app.html`: All 라이프
+- `life.html`: All 라이프
 - `calculator.html`: All 계산기
 - `calendar.html`: All 캘린더
 - `memo.html`: All 메모장
@@ -98,7 +98,7 @@ index.html
 sisicolcol/
   README.md
   index.html
-  app.html
+  life.html
   calculator.html
   calendar.html
   memo.html
