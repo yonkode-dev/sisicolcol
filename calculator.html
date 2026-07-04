@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>All 계산기</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            min-height: 100%;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: "Pretendard", "Noto Sans KR", Arial, sans-serif;
+            color: #162033;
+            background:
+                radial-gradient(circle at 14% 10%, rgba(72, 187, 255, 0.24), transparent 30%),
+                radial-gradient(circle at 88% 18%, rgba(255, 183, 77, 0.2), transparent 28%),
+                linear-gradient(135deg, #eef5ff 0%, #f8fbff 44%, #f4f7f1 100%);
+        }
+
+        button,
+        input,
+        select,
+        a {
+            font: inherit;
+        }
+
+        button {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .shell {
+            width: min(430px, 100%);
+            min-height: 100dvh;
+            margin: 0 auto;
+            padding: max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
+            display: flex;
+            align-items: stretch;
+        }
+
+        .screen {
+            width: 100%;
+            min-height: calc(100dvh - 28px);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            background: rgba(255, 255, 255, 0.94);
+            border: 1px solid rgba(218, 226, 240, 0.95);
+            border-radius: 8px;
+            box-shadow: 0 18px 45px rgba(22, 32, 51, 0.12);
+        }
+
+        .top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 42px;
+            padding: 0 14px;
+            border-radius: 8px;
+            background: #edf3fb;
+            color: #26364d;
+            font-size: 14px;
+            font-weight: 900;
+            text-decoration: none;
+        }
+
+        .mark {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            background: #2563eb;
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 900;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(34px, 10vw, 46px);
+            line-height: 1.05;
+            letter-spacing: 0;
+        }
+
+        .tabs {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 6px;
+            padding: 5px;
+            border-radius: 8px;
+            background: #edf3fb;
+        }
+
+        .tab-button {
+            min-height: 42px;
+            border: 0;
+            border-radius: 7px;
+            background: transparent;
+            color: #52647a;
+            font-size: 13px;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        .tab-button.active {
+            background: #2563eb;
+            color: #ffffff;
+            box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
+        }
+
+        .slider {
+            overflow: hidden;
+            touch-action: pan-y;
+        }
+
+        .slider-track {
+            display: flex;
+            width: 300%;
+            transition: transform 0.28s ease;
+        }
+
+        .slide {
+            width: 33.3333%;
+            flex: 0 0 33.3333%;
+            padding: 1px;
+        }
+
+        .panel {
+            min-height: 438px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .result-box,
+        .form-box {
+            border: 1px solid #dbe5f1;
+            border-radius: 8px;
+            background: #ffffff;
+        }
+
+        .result-box {
+            min-height: 92px;
+            padding: 14px;
+            display: grid;
+            align-content: center;
+            gap: 7px;
+            overflow: hidden;
+        }
+
+        .result-label {
+            color: #68788d;
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .result-value {
+            min-height: 33px;
+            color: #162033;
+            font-size: 28px;
+            font-weight: 900;
+            line-height: 1.15;
+            overflow-wrap: anywhere;
+        }
+
+        .formula {
+            color: #68788d;
+            font-size: 12px;
+            line-height: 1.35;
+            min-height: 16px;
+            overflow-wrap: anywhere;
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .key {
+            min-height: 54px;
+            border: 0;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #172033;
+            font-size: 20px;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: inset 0 0 0 1px #dbe5f1;
+        }
+
+        .key.operator {
+            color: #2563eb;
+            background: #edf3fb;
+        }
+
+        .key.danger {
+            color: #b42318;
+            background: #fff1f0;
+        }
+
+        .key.equals {
+            grid-column: span 2;
+            background: #2563eb;
+            color: #ffffff;
+            box-shadow: none;
+        }
+
+        .form-box {
+            padding: 14px;
+            display: grid;
+            gap: 12px;
+        }
+
+        .field {
+            display: grid;
+            gap: 7px;
+        }
+
+        .field label {
+            color: #34445a;
+            font-size: 13px;
+            font-weight: 900;
+        }
+
+        input,
+        select {
+            width: 100%;
+            min-height: 46px;
+            border: 1px solid #d7e0ec;
+            border-radius: 8px;
+            background: #f8fbff;
+            color: #162033;
+            padding: 11px 12px;
+            font-size: 15px;
+        }
+
+        .split-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .action-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .action-button {
+            min-height: 46px;
+            border: 0;
+            border-radius: 8px;
+            background: #2563eb;
+            color: #ffffff;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        .action-button.secondary {
+            background: #edf3fb;
+            color: #26364d;
+        }
+
+        @media (min-width: 760px) {
+            .shell {
+                width: min(980px, 100%);
+                padding: 28px;
+            }
+
+            .screen {
+                min-height: calc(100dvh - 56px);
+                padding: 30px;
+                gap: 18px;
+            }
+
+            .panel {
+                min-height: 500px;
+            }
+
+            .key {
+                min-height: 62px;
+            }
+        }
+
+        @media (max-width: 374px) {
+            .screen {
+                padding: 15px;
+                gap: 12px;
+            }
+
+            .tab-button {
+                min-height: 38px;
+                font-size: 12px;
+            }
+
+            .panel {
+                min-height: 404px;
+            }
+
+            .result-value {
+                font-size: 24px;
+            }
+
+            .key {
+                min-height: 48px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="shell">
+        <section class="screen" aria-labelledby="pageTitle">
+            <div class="top-row">
+                <a class="back-link" href="index.html">처음으로</a>
+                <div class="mark" aria-hidden="true">C</div>
+            </div>
+
+            <h1 id="pageTitle">All 계산기</h1>
+
+            <nav class="tabs" aria-label="계산기 종류">
+                <button class="tab-button active" type="button" data-tab="0">일반</button>
+                <button class="tab-button" type="button" data-tab="1">단위</button>
+                <button class="tab-button" type="button" data-tab="2">날짜</button>
+            </nav>
+
+            <div id="slider" class="slider">
+                <div id="sliderTrack" class="slider-track">
+                    <section class="slide" aria-label="일반 계산기">
+                        <div class="panel">
+                            <div class="result-box">
+                                <div class="result-label">일반 계산기</div>
+                                <div id="basicResult" class="result-value">0</div>
+                                <div id="basicFormula" class="formula"></div>
+                            </div>
+
+                            <div class="keypad" aria-label="계산기 키패드">
+                                <button class="key danger" type="button" data-key="clear">C</button>
+                                <button class="key operator" type="button" data-key="back">⌫</button>
+                                <button class="key operator" type="button" data-key="%">%</button>
+                                <button class="key operator" type="button" data-key="/">÷</button>
+                                <button class="key" type="button" data-key="7">7</button>
+                                <button class="key" type="button" data-key="8">8</button>
+                                <button class="key" type="button" data-key="9">9</button>
+                                <button class="key operator" type="button" data-key="*">×</button>
+                                <button class="key" type="button" data-key="4">4</button>
+                                <button class="key" type="button" data-key="5">5</button>
+                                <button class="key" type="button" data-key="6">6</button>
+                                <button class="key operator" type="button" data-key="-">−</button>
+                                <button class="key" type="button" data-key="1">1</button>
+                                <button class="key" type="button" data-key="2">2</button>
+                                <button class="key" type="button" data-key="3">3</button>
+                                <button class="key operator" type="button" data-key="+">+</button>
+                                <button class="key" type="button" data-key="0">0</button>
+                                <button class="key" type="button" data-key=".">.</button>
+                                <button class="key equals" type="button" data-key="=">=</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="slide" aria-label="단위 계산기">
+                        <div class="panel">
+                            <div class="result-box">
+                                <div class="result-label">단위 계산기</div>
+                                <div id="unitResult" class="result-value">0</div>
+                                <div id="unitFormula" class="formula">길이, 무게, 온도를 변환합니다.</div>
+                            </div>
+
+                            <div class="form-box">
+                                <div class="field">
+                                    <label for="unitCategory">종류</label>
+                                    <select id="unitCategory">
+                                        <option value="length">길이</option>
+                                        <option value="weight">무게</option>
+                                        <option value="temperature">온도</option>
+                                    </select>
+                                </div>
+
+                                <div class="field">
+                                    <label for="unitValue">값</label>
+                                    <input id="unitValue" type="number" inputmode="decimal" value="1" />
+                                </div>
+
+                                <div class="split-row">
+                                    <div class="field">
+                                        <label for="unitFrom">변환 전</label>
+                                        <select id="unitFrom"></select>
+                                    </div>
+                                    <div class="field">
+                                        <label for="unitTo">변환 후</label>
+                                        <select id="unitTo"></select>
+                                    </div>
+                                </div>
+
+                                <div class="action-row">
+                                    <button id="swapUnitButton" class="action-button secondary" type="button">바꾸기</button>
+                                    <button id="convertUnitButton" class="action-button" type="button">계산</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="slide" aria-label="날짜 계산기">
+                        <div class="panel">
+                            <div class="result-box">
+                                <div class="result-label">날짜 계산기</div>
+                                <div id="dateResult" class="result-value">0일</div>
+                                <div id="dateFormula" class="formula">두 날짜 차이를 계산합니다.</div>
+                            </div>
+
+                            <div class="form-box">
+                                <div class="split-row">
+                                    <div class="field">
+                                        <label for="startDate">시작일</label>
+                                        <input id="startDate" type="date" />
+                                    </div>
+                                    <div class="field">
+                                        <label for="endDate">종료일</label>
+                                        <input id="endDate" type="date" />
+                                    </div>
+                                </div>
+
+                                <div class="field">
+                                    <label for="daysToAdd">더할 날짜</label>
+                                    <input id="daysToAdd" type="number" inputmode="numeric" value="7" />
+                                </div>
+
+                                <div class="action-row">
+                                    <button id="diffDateButton" class="action-button" type="button">차이 계산</button>
+                                    <button id="addDateButton" class="action-button secondary" type="button">날짜 더하기</button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const tabs = Array.from(document.querySelectorAll(".tab-button"));
+        const slider = document.getElementById("slider");
+        const sliderTrack = document.getElementById("sliderTrack");
+        let currentTab = 0;
+
+        function showTab(index) {
+            currentTab = Math.max(0, Math.min(index, tabs.length - 1));
+            sliderTrack.style.transform = `translateX(-${currentTab * 33.3333}%)`;
+
+            tabs.forEach((tab, tabIndex) => {
+                tab.classList.toggle("active", tabIndex === currentTab);
+            });
+        }
+
+        tabs.forEach((tab) => {
+            tab.addEventListener("click", () => {
+                showTab(Number(tab.dataset.tab));
+            });
+        });
+
+        function enableSwipe() {
+            let startX = 0;
+            let startY = 0;
+            let endX = 0;
+            let endY = 0;
+
+            slider.addEventListener("touchstart", (event) => {
+                const touch = event.touches[0];
+                startX = touch.clientX;
+                startY = touch.clientY;
+                endX = startX;
+                endY = startY;
+            }, { passive: true });
+
+            slider.addEventListener("touchmove", (event) => {
+                const touch = event.touches[0];
+                endX = touch.clientX;
+                endY = touch.clientY;
+            }, { passive: true });
+
+            slider.addEventListener("touchend", () => {
+                const diffX = endX - startX;
+                const diffY = endY - startY;
+                const isSwipe = Math.abs(diffX) > 48 && Math.abs(diffX) > Math.abs(diffY) * 1.35;
+
+                if (isSwipe) {
+                    showTab(currentTab + (diffX < 0 ? 1 : -1));
+                }
+            });
+        }
+
+        const basicResult = document.getElementById("basicResult");
+        const basicFormula = document.getElementById("basicFormula");
+        let expression = "";
+
+        function formatNumber(value) {
+            if (!Number.isFinite(value)) {
+                return "계산 불가";
+            }
+
+            return Number.parseFloat(value.toFixed(10)).toLocaleString("ko-KR");
+        }
+
+        function renderExpression() {
+            basicResult.textContent = expression || "0";
+            basicFormula.textContent = "";
+        }
+
+        function calculateExpression() {
+            if (!expression) {
+                return;
+            }
+
+            const normalized = expression.replace(/%/g, "/100");
+
+            if (!/^[0-9+\-*/().\s]+$/.test(normalized)) {
+                basicResult.textContent = "입력 오류";
+                return;
+            }
+
+            try {
+                const result = Function(`"use strict"; return (${normalized});`)();
+                basicFormula.textContent = expression;
+                expression = String(Number.parseFloat(result.toFixed(10)));
+                basicResult.textContent = formatNumber(result);
+            } catch (error) {
+                basicResult.textContent = "계산 오류";
+            }
+        }
+
+        document.querySelectorAll("[data-key]").forEach((button) => {
+            button.addEventListener("click", () => {
+                const key = button.dataset.key;
+
+                if (key === "clear") {
+                    expression = "";
+                    renderExpression();
+                    return;
+                }
+
+                if (key === "back") {
+                    expression = expression.slice(0, -1);
+                    renderExpression();
+                    return;
+                }
+
+                if (key === "=") {
+                    calculateExpression();
+                    return;
+                }
+
+                expression += key;
+                renderExpression();
+            });
+        });
+
+        const unitData = {
+            length: {
+                label: "길이",
+                units: {
+                    mm: { label: "밀리미터", factor: 0.001 },
+                    cm: { label: "센티미터", factor: 0.01 },
+                    m: { label: "미터", factor: 1 },
+                    km: { label: "킬로미터", factor: 1000 }
+                }
+            },
+            weight: {
+                label: "무게",
+                units: {
+                    g: { label: "그램", factor: 1 },
+                    kg: { label: "킬로그램", factor: 1000 },
+                    t: { label: "톤", factor: 1000000 },
+                    lb: { label: "파운드", factor: 453.59237 }
+                }
+            },
+            temperature: {
+                label: "온도",
+                units: {
+                    c: { label: "섭씨" },
+                    f: { label: "화씨" },
+                    k: { label: "켈빈" }
+                }
+            }
+        };
+
+        const unitCategory = document.getElementById("unitCategory");
+        const unitValue = document.getElementById("unitValue");
+        const unitFrom = document.getElementById("unitFrom");
+        const unitTo = document.getElementById("unitTo");
+        const unitResult = document.getElementById("unitResult");
+        const unitFormula = document.getElementById("unitFormula");
+
+        function populateUnits() {
+            const category = unitData[unitCategory.value];
+            const options = Object.entries(category.units)
+                .map(([value, unit]) => `<option value="${value}">${unit.label}</option>`)
+                .join("");
+
+            unitFrom.innerHTML = options;
+            unitTo.innerHTML = options;
+            unitTo.selectedIndex = Math.min(1, unitTo.options.length - 1);
+            convertUnit();
+        }
+
+        function toCelsius(value, unit) {
+            if (unit === "f") return (value - 32) * 5 / 9;
+            if (unit === "k") return value - 273.15;
+            return value;
+        }
+
+        function fromCelsius(value, unit) {
+            if (unit === "f") return value * 9 / 5 + 32;
+            if (unit === "k") return value + 273.15;
+            return value;
+        }
+
+        function convertUnit() {
+            const value = Number(unitValue.value);
+            const categoryKey = unitCategory.value;
+            const category = unitData[categoryKey];
+
+            if (!Number.isFinite(value)) {
+                unitResult.textContent = "값을 입력하세요";
+                return;
+            }
+
+            let result;
+
+            if (categoryKey === "temperature") {
+                result = fromCelsius(toCelsius(value, unitFrom.value), unitTo.value);
+            } else {
+                result = value * category.units[unitFrom.value].factor / category.units[unitTo.value].factor;
+            }
+
+            const fromLabel = category.units[unitFrom.value].label;
+            const toLabel = category.units[unitTo.value].label;
+            unitResult.textContent = formatNumber(result);
+            unitFormula.textContent = `${formatNumber(value)} ${fromLabel} = ${formatNumber(result)} ${toLabel}`;
+        }
+
+        document.getElementById("swapUnitButton").addEventListener("click", () => {
+            const fromValue = unitFrom.value;
+            unitFrom.value = unitTo.value;
+            unitTo.value = fromValue;
+            convertUnit();
+        });
+
+        document.getElementById("convertUnitButton").addEventListener("click", convertUnit);
+        unitCategory.addEventListener("change", populateUnits);
+        unitValue.addEventListener("input", convertUnit);
+        unitFrom.addEventListener("change", convertUnit);
+        unitTo.addEventListener("change", convertUnit);
+
+        const startDate = document.getElementById("startDate");
+        const endDate = document.getElementById("endDate");
+        const daysToAdd = document.getElementById("daysToAdd");
+        const dateResult = document.getElementById("dateResult");
+        const dateFormula = document.getElementById("dateFormula");
+
+        function toDate(value) {
+            return new Date(`${value}T00:00:00`);
+        }
+
+        function formatDate(date) {
+            return date.toLocaleDateString("ko-KR", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                weekday: "short"
+            });
+        }
+
+        function setTodayDefaults() {
+            const today = new Date();
+            const nextWeek = new Date(today);
+            nextWeek.setDate(today.getDate() + 7);
+            startDate.valueAsDate = today;
+            endDate.valueAsDate = nextWeek;
+        }
+
+        function calculateDateDiff() {
+            if (!startDate.value || !endDate.value) {
+                dateResult.textContent = "날짜 필요";
+                return;
+            }
+
+            const start = toDate(startDate.value);
+            const end = toDate(endDate.value);
+            const diff = Math.round((end - start) / 86400000);
+            dateResult.textContent = `${Math.abs(diff).toLocaleString("ko-KR")}일`;
+            dateFormula.textContent = diff >= 0
+                ? `${formatDate(start)}부터 ${formatDate(end)}까지`
+                : `${formatDate(end)}부터 ${formatDate(start)}까지`;
+        }
+
+        function addDays() {
+            if (!startDate.value) {
+                dateResult.textContent = "시작일 필요";
+                return;
+            }
+
+            const amount = Number(daysToAdd.value);
+
+            if (!Number.isFinite(amount)) {
+                dateResult.textContent = "일수 필요";
+                return;
+            }
+
+            const base = toDate(startDate.value);
+            const result = new Date(base);
+            result.setDate(base.getDate() + amount);
+            dateResult.textContent = formatDate(result);
+            dateFormula.textContent = `${formatDate(base)}에서 ${amount.toLocaleString("ko-KR")}일 이동`;
+        }
+
+        document.getElementById("diffDateButton").addEventListener("click", calculateDateDiff);
+        document.getElementById("addDateButton").addEventListener("click", addDays);
+        startDate.addEventListener("change", calculateDateDiff);
+        endDate.addEventListener("change", calculateDateDiff);
+        daysToAdd.addEventListener("input", addDays);
+
+        enableSwipe();
+        populateUnits();
+        setTodayDefaults();
+        calculateDateDiff();
+    </script>
+</body>
+</html>

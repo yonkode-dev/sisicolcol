@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>All 캘린더</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            min-height: 100%;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: "Pretendard", "Noto Sans KR", Arial, sans-serif;
+            color: #162033;
+            background:
+                radial-gradient(circle at 14% 10%, rgba(72, 187, 255, 0.24), transparent 30%),
+                radial-gradient(circle at 88% 18%, rgba(255, 183, 77, 0.2), transparent 28%),
+                linear-gradient(135deg, #eef5ff 0%, #f8fbff 44%, #f4f7f1 100%);
+        }
+
+        button,
+        textarea,
+        a {
+            font: inherit;
+        }
+
+        button {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .shell {
+            width: min(430px, 100%);
+            min-height: 100dvh;
+            margin: 0 auto;
+            padding: max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
+            display: flex;
+            align-items: stretch;
+        }
+
+        .screen {
+            width: 100%;
+            min-height: calc(100dvh - 28px);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            background: rgba(255, 255, 255, 0.94);
+            border: 1px solid rgba(218, 226, 240, 0.95);
+            border-radius: 8px;
+            box-shadow: 0 18px 45px rgba(22, 32, 51, 0.12);
+        }
+
+        .top-row,
+        .month-row,
+        .memo-head,
+        .action-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .top-row,
+        .memo-head {
+            justify-content: space-between;
+        }
+
+        .back-link,
+        .nav-button,
+        .today-button,
+        .save-button,
+        .delete-button {
+            border: 0;
+            border-radius: 8px;
+            font-weight: 900;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 42px;
+            padding: 0 14px;
+            background: #edf3fb;
+            color: #26364d;
+            font-size: 14px;
+        }
+
+        .mark {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            background: #2563eb;
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 900;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(34px, 10vw, 46px);
+            line-height: 1.05;
+            letter-spacing: 0;
+        }
+
+        .month-row {
+            justify-content: space-between;
+            padding: 12px;
+            border: 1px solid #dbe5f1;
+            border-radius: 8px;
+            background: #ffffff;
+        }
+
+        .month-title {
+            min-width: 128px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        .nav-button,
+        .today-button {
+            min-height: 38px;
+            background: #edf3fb;
+            color: #26364d;
+        }
+
+        .nav-button {
+            width: 38px;
+            font-size: 22px;
+            line-height: 1;
+        }
+
+        .today-button {
+            padding: 0 12px;
+            font-size: 13px;
+        }
+
+        .calendar {
+            display: grid;
+            gap: 8px;
+            padding: 12px;
+            border: 1px solid #dbe5f1;
+            border-radius: 8px;
+            background: #ffffff;
+        }
+
+        .weekdays,
+        .days {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 6px;
+        }
+
+        .weekday {
+            color: #68788d;
+            font-size: 11px;
+            font-weight: 900;
+            text-align: center;
+        }
+
+        .day-button {
+            position: relative;
+            min-height: 42px;
+            border: 1px solid #e3ebf5;
+            border-radius: 8px;
+            background: #f8fbff;
+            color: #172033;
+            font-size: 14px;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        .day-button.outside {
+            color: #a5b2c0;
+            background: #fbfdff;
+        }
+
+        .day-button.today {
+            border-color: #2563eb;
+            color: #2563eb;
+        }
+
+        .day-button.selected {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: #ffffff;
+        }
+
+        .day-button.has-memo::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: 5px;
+            width: 5px;
+            height: 5px;
+            border-radius: 999px;
+            background: #f59e0b;
+            transform: translateX(-50%);
+        }
+
+        .day-button.selected.has-memo::after {
+            background: #ffffff;
+        }
+
+        .memo-panel {
+            display: grid;
+            gap: 10px;
+            padding: 14px;
+            border: 1px solid #dbe5f1;
+            border-radius: 8px;
+            background: #ffffff;
+        }
+
+        .memo-date {
+            color: #162033;
+            font-size: 16px;
+            font-weight: 900;
+        }
+
+        .memo-state {
+            min-height: 18px;
+            color: #0f7a4f;
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 132px;
+            resize: vertical;
+            border: 1px solid #d7e0ec;
+            border-radius: 8px;
+            background: #f8fbff;
+            color: #162033;
+            padding: 12px;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .action-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .save-button,
+        .delete-button {
+            min-height: 44px;
+        }
+
+        .save-button {
+            background: #2563eb;
+            color: #ffffff;
+        }
+
+        .delete-button {
+            background: #fff1f0;
+            color: #b42318;
+        }
+
+        @media (min-width: 760px) {
+            .shell {
+                width: min(980px, 100%);
+                padding: 28px;
+            }
+
+            .screen {
+                min-height: calc(100dvh - 56px);
+                padding: 30px;
+                gap: 18px;
+            }
+
+            .calendar-layout {
+                display: grid;
+                grid-template-columns: 1fr 340px;
+                gap: 14px;
+                align-items: start;
+            }
+
+            .day-button {
+                min-height: 58px;
+            }
+        }
+
+        @media (max-width: 374px) {
+            .screen {
+                padding: 15px;
+                gap: 12px;
+            }
+
+            .month-row,
+            .calendar,
+            .memo-panel {
+                padding: 10px;
+            }
+
+            .month-title {
+                min-width: 116px;
+                font-size: 16px;
+            }
+
+            .day-button {
+                min-height: 38px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="shell">
+        <section class="screen" aria-labelledby="pageTitle">
+            <div class="top-row">
+                <a class="back-link" href="index.html">처음으로</a>
+                <div class="mark" aria-hidden="true">C</div>
+            </div>
+
+            <h1 id="pageTitle">All 캘린더</h1>
+
+            <div class="month-row">
+                <button id="prevMonth" class="nav-button" type="button" aria-label="이전 달">‹</button>
+                <div id="monthTitle" class="month-title"></div>
+                <button id="nextMonth" class="nav-button" type="button" aria-label="다음 달">›</button>
+                <button id="todayButton" class="today-button" type="button">오늘</button>
+            </div>
+
+            <div class="calendar-layout">
+                <div class="calendar" aria-label="월간 달력">
+                    <div class="weekdays" aria-hidden="true">
+                        <div class="weekday">일</div>
+                        <div class="weekday">월</div>
+                        <div class="weekday">화</div>
+                        <div class="weekday">수</div>
+                        <div class="weekday">목</div>
+                        <div class="weekday">금</div>
+                        <div class="weekday">토</div>
+                    </div>
+                    <div id="calendarDays" class="days"></div>
+                </div>
+
+                <aside class="memo-panel" aria-labelledby="memoTitle">
+                    <div class="memo-head">
+                        <div id="memoTitle" class="memo-date"></div>
+                        <div id="memoState" class="memo-state" role="status" aria-live="polite"></div>
+                    </div>
+                    <textarea id="memoInput" placeholder="선택한 날짜의 메모를 입력하세요."></textarea>
+                    <div class="action-row">
+                        <button id="saveMemo" class="save-button" type="button">저장</button>
+                        <button id="deleteMemo" class="delete-button" type="button">삭제</button>
+                    </div>
+                </aside>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const storageKey = "sisicolcol.calendar.memos";
+        const monthTitle = document.getElementById("monthTitle");
+        const calendarDays = document.getElementById("calendarDays");
+        const memoPanel = document.querySelector(".memo-panel");
+        const memoTitle = document.getElementById("memoTitle");
+        const memoInput = document.getElementById("memoInput");
+        const memoState = document.getElementById("memoState");
+
+        const today = new Date();
+        let viewYear = today.getFullYear();
+        let viewMonth = today.getMonth();
+        let selectedDateKey = toDateKey(today);
+        let memos = loadMemos();
+
+        function loadMemos() {
+            try {
+                return JSON.parse(localStorage.getItem(storageKey) || "{}");
+            } catch (error) {
+                localStorage.removeItem(storageKey);
+                return {};
+            }
+        }
+
+        function saveMemos() {
+            localStorage.setItem(storageKey, JSON.stringify(memos));
+        }
+
+        function toDateKey(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+            return `${year}-${month}-${day}`;
+        }
+
+        function dateFromKey(key) {
+            return new Date(`${key}T00:00:00`);
+        }
+
+        function formatDateText(key) {
+            return dateFromKey(key).toLocaleDateString("ko-KR", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                weekday: "short"
+            });
+        }
+
+        function showState(message) {
+            memoState.textContent = message;
+            window.clearTimeout(showState.timer);
+            showState.timer = window.setTimeout(() => {
+                memoState.textContent = "";
+            }, 1600);
+        }
+
+        function selectDate(key, shouldFocusMemo = false) {
+            selectedDateKey = key;
+            memoTitle.textContent = formatDateText(key);
+            memoInput.value = memos[key] || "";
+            renderCalendar();
+
+            if (shouldFocusMemo && window.matchMedia("(max-width: 759px)").matches) {
+                memoPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                memoInput.focus();
+            }
+        }
+
+        function renderCalendar() {
+            const firstDate = new Date(viewYear, viewMonth, 1);
+            const startDate = new Date(viewYear, viewMonth, 1 - firstDate.getDay());
+            const todayKey = toDateKey(today);
+
+            monthTitle.textContent = firstDate.toLocaleDateString("ko-KR", {
+                year: "numeric",
+                month: "long"
+            });
+
+            calendarDays.innerHTML = "";
+
+            for (let index = 0; index < 42; index += 1) {
+                const date = new Date(startDate);
+                date.setDate(startDate.getDate() + index);
+
+                const key = toDateKey(date);
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "day-button";
+                button.textContent = date.getDate();
+                button.setAttribute("aria-label", `${formatDateText(key)} 선택`);
+
+                if (date.getMonth() !== viewMonth) {
+                    button.classList.add("outside");
+                }
+
+                if (key === todayKey) {
+                    button.classList.add("today");
+                }
+
+                if (key === selectedDateKey) {
+                    button.classList.add("selected");
+                }
+
+                if ((memos[key] || "").trim()) {
+                    button.classList.add("has-memo");
+                }
+
+                button.addEventListener("click", () => {
+                    viewYear = date.getFullYear();
+                    viewMonth = date.getMonth();
+                    selectDate(key, true);
+                });
+
+                calendarDays.appendChild(button);
+            }
+        }
+
+        document.getElementById("prevMonth").addEventListener("click", () => {
+            viewMonth -= 1;
+
+            if (viewMonth < 0) {
+                viewMonth = 11;
+                viewYear -= 1;
+            }
+
+            renderCalendar();
+        });
+
+        document.getElementById("nextMonth").addEventListener("click", () => {
+            viewMonth += 1;
+
+            if (viewMonth > 11) {
+                viewMonth = 0;
+                viewYear += 1;
+            }
+
+            renderCalendar();
+        });
+
+        document.getElementById("todayButton").addEventListener("click", () => {
+            viewYear = today.getFullYear();
+            viewMonth = today.getMonth();
+            selectDate(toDateKey(today));
+        });
+
+        document.getElementById("saveMemo").addEventListener("click", () => {
+            const value = memoInput.value.trim();
+
+            if (value) {
+                memos[selectedDateKey] = value;
+            } else {
+                delete memos[selectedDateKey];
+            }
+
+            saveMemos();
+            renderCalendar();
+            showState("저장됨");
+        });
+
+        document.getElementById("deleteMemo").addEventListener("click", () => {
+            delete memos[selectedDateKey];
+            memoInput.value = "";
+            saveMemos();
+            renderCalendar();
+            showState("삭제됨");
+        });
+
+        selectDate(selectedDateKey);
+    </script>
+</body>
+</html>
