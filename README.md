@@ -5,10 +5,10 @@
 ## 주요 화면
 
 - `index.html`: 서비스 시작 화면
-- `life.html`: All 라이프
-- `calculator.html`: All 계산기
-- `calendar.html`: All 캘린더
-- `memo.html`: All 메모장
+- `life.html`: SiSiColCol 라이프
+- `calculator.html`: SiSiColCol 계산기
+- `calendar.html`: SiSiColCol 캘린더
+- `memo.html`: SiSiColCol 메모장
 - `dashboard.html`: 이전 대시보드 파일
 
 ## 기능
@@ -17,15 +17,15 @@
 
 `index.html`에서 각 서비스로 이동합니다.
 
-- All 라이프
-- All 계산기
-- All 캘린더
-- All 메모장
+- SiSiColCol 라이프
+- SiSiColCol 계산기
+- SiSiColCol 캘린더
+- SiSiColCol 메모장
 - 추후 추가
 
 오른쪽 상단 설정 버튼에서 API 키와 기본 위치를 저장할 수 있습니다.
 
-### All 라이프
+### SiSiColCol 라이프
 
 현재 위치 기반 생활 정보 대시보드입니다.
 
@@ -43,7 +43,7 @@
 - BigDataCloud Reverse Geocoding
 - USGS Earthquake API
 
-### All 계산기
+### SiSiColCol 계산기
 
 탭과 좌우 스와이프로 전환되는 계산기 화면입니다.
 
@@ -51,7 +51,7 @@
 - 단위 계산기: 길이, 무게, 온도
 - 날짜 계산기: 날짜 차이, 날짜 더하기
 
-### All 캘린더
+### SiSiColCol 캘린더
 
 월간 달력과 날짜별 메모 기능을 제공합니다.
 
@@ -61,7 +61,7 @@
 - 메모 저장 및 삭제
 - 메모가 있는 날짜 표시
 
-### All 메모장
+### SiSiColCol 메모장
 
 LocalStorage 기반 메모장입니다.
 

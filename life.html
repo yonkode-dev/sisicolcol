@@ -341,21 +341,8 @@
         }
 
         .forecast-list {
-            display: flex;
+            display: grid;
             gap: 12px;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            scroll-behavior: smooth;
-            padding-bottom: 2px;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .forecast-list::-webkit-scrollbar {
-            display: none;
-        }
-
-        .forecast-list {
-            scrollbar-width: none;
         }
 
         .time-weather-grid {
@@ -371,8 +358,38 @@
         }
 
         .forecast-box {
-            flex: 0 0 100%;
-            scroll-snap-align: start;
+            display: none;
+        }
+
+        .forecast-box.active {
+            display: block;
+        }
+
+        .forecast-switch {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 6px;
+            margin-bottom: 10px;
+            padding: 5px;
+            border-radius: 8px;
+            background: #edf3fb;
+        }
+
+        .forecast-switch-btn {
+            min-height: 38px;
+            border: 0;
+            border-radius: 7px;
+            background: transparent;
+            color: #52647a;
+            font-size: 14px;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        .forecast-switch-btn.active {
+            background: #2563eb;
+            color: #ffffff;
+            box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
         }
 
         .time-box {
@@ -412,22 +429,22 @@
         }
 
         .forecast-day {
-            font-size: 17px;
+            font-size: 22px;
             font-weight: 900;
         }
 
         .forecast-date {
-            font-size: 12px;
+            font-size: 14px;
             color: #6b7280;
             margin-top: 3px;
         }
 
         .forecast-icon {
-            font-size: 36px;
+            font-size: 46px;
         }
 
         .forecast-text {
-            font-size: 16px;
+            font-size: 20px;
             font-weight: 900;
             margin-bottom: 10px;
         }
@@ -863,29 +880,29 @@
 
             .forecast-box {
                 border-radius: 8px;
-                padding: 8px;
+                padding: 12px;
             }
 
             .forecast-top {
-                margin-bottom: 5px;
+                margin-bottom: 8px;
             }
 
             .forecast-day {
-                font-size: 13px;
+                font-size: 20px;
             }
 
             .forecast-date {
-                font-size: 10px;
-                margin-top: 1px;
+                font-size: 13px;
+                margin-top: 3px;
             }
 
             .forecast-icon {
-                font-size: 26px;
+                font-size: 40px;
             }
 
             .forecast-text {
-                font-size: 12px;
-                margin-bottom: 6px;
+                font-size: 18px;
+                margin-bottom: 10px;
             }
 
             .forecast-detail {
@@ -899,12 +916,12 @@
             }
 
             .mini-label {
-                font-size: 9px;
-                margin-bottom: 3px;
+                font-size: 11px;
+                margin-bottom: 4px;
             }
 
             .mini-value {
-                font-size: 10px;
+                font-size: 14px;
             }
 
             .link-grid {
@@ -1093,8 +1110,13 @@
                             <section class="box">
                                 <div class="section-label">예보</div>
 
+                                <div class="forecast-switch" aria-label="예보 날짜 선택">
+                                    <button class="forecast-switch-btn active" type="button" data-forecast-index="0">내일</button>
+                                    <button class="forecast-switch-btn" type="button" data-forecast-index="1">모레</button>
+                                </div>
+
                                 <div class="forecast-list">
-                                    <div class="forecast-box">
+                                    <div class="forecast-box active">
                                         <div class="forecast-top">
                                             <div>
                                                 <div class="forecast-day">내일</div>
@@ -2229,6 +2251,25 @@
             showSlide(slideByHash[hash]);
         }
     }
+
+    function showForecast(index) {
+        const buttons = document.querySelectorAll(".forecast-switch-btn");
+        const boxes = document.querySelectorAll(".forecast-box");
+
+        buttons.forEach((button, buttonIndex) => {
+            button.classList.toggle("active", buttonIndex === index);
+        });
+
+        boxes.forEach((box, boxIndex) => {
+            box.classList.toggle("active", boxIndex === index);
+        });
+    }
+
+    document.querySelectorAll(".forecast-switch-btn").forEach((button) => {
+        button.addEventListener("click", () => {
+            showForecast(Number(button.dataset.forecastIndex));
+        });
+    });
 
     window.addEventListener("hashchange", showInitialSlideFromHash);
 
