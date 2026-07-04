@@ -13,9 +13,10 @@
         html,
         body {
             width: 100%;
-            height: 100%;
+            min-height: 100%;
             margin: 0;
             overflow-x: hidden;
+            overflow-y: auto;
         }
 
         body {
@@ -32,7 +33,7 @@
 
         .container {
             width: min(430px, 100%);
-            min-height: 100dvh;
+            min-height: 100svh;
             padding: max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
             display: flex;
             align-items: stretch;
@@ -41,7 +42,7 @@
 
         .app-card {
             width: 100%;
-            min-height: calc(100dvh - 28px);
+            min-height: calc(100svh - 28px);
             background: rgba(255, 255, 255, 0.94);
             border-radius: 8px;
             padding: 18px;
@@ -541,7 +542,7 @@
             }
 
             .app-card {
-                min-height: calc(100dvh - 56px);
+                min-height: calc(100svh - 56px);
                 padding: 30px;
             }
 
@@ -597,8 +598,10 @@
         @media (max-width: 540px) {
             html,
             body {
-                height: 100%;
-                overflow: hidden;
+                height: auto;
+                min-height: 100%;
+                overflow-x: hidden;
+                overflow-y: auto;
             }
 
             body {
@@ -606,17 +609,19 @@
             }
 
             .container {
-                height: 100dvh;
+                height: auto;
+                min-height: 100svh;
                 padding: max(12px, env(safe-area-inset-top)) 10px max(12px, env(safe-area-inset-bottom));
                 align-items: flex-start;
             }
 
             .app-card {
-                height: calc(100dvh - 24px);
-                max-height: calc(100dvh - 24px);
+                height: auto;
+                min-height: calc(100svh - 24px);
+                max-height: none;
                 border-radius: 8px;
                 padding: 12px;
-                overflow: hidden;
+                overflow: visible;
             }
 
             .global-error {
@@ -670,25 +675,26 @@
             }
 
             .slider {
-                height: calc(100dvh - 112px);
+                height: auto;
             }
 
             .app-card.has-global-error .slider {
-                height: calc(100dvh - 162px);
+                height: auto;
             }
 
             .slider-track {
-                height: 100%;
+                height: auto;
+                align-items: flex-start;
             }
 
             .slide {
-                height: 100%;
-                overflow: hidden;
+                height: auto;
+                overflow: visible;
             }
 
             .page {
-                height: 100%;
-                overflow: hidden;
+                height: auto;
+                overflow: visible;
             }
 
             .header {

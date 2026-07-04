@@ -15,6 +15,7 @@
             min-height: 100%;
             margin: 0;
             overflow-x: hidden;
+            overflow-y: auto;
         }
 
         body {
@@ -38,7 +39,7 @@
 
         .shell {
             width: min(430px, 100%);
-            min-height: 100dvh;
+            min-height: 100svh;
             margin: 0 auto;
             padding: max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
             display: flex;
@@ -47,7 +48,7 @@
 
         .screen {
             width: 100%;
-            min-height: calc(100dvh - 28px);
+            min-height: calc(100svh - 28px);
             padding: 18px;
             display: flex;
             flex-direction: column;
@@ -276,7 +277,7 @@
             }
 
             .screen {
-                min-height: calc(100dvh - 56px);
+                min-height: calc(100svh - 56px);
                 padding: 30px;
                 gap: 18px;
             }
